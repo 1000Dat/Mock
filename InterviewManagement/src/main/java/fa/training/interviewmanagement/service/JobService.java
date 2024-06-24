@@ -14,5 +14,6 @@ public interface JobService {
     List<Job> searchJob(String key);
     Job updateJob(Integer id, JobDto jobDetails);
 
-    void changeStatus();
+    void changeStatusEndWork();
+    void changeStatusStartWork();
 }

@@ -92,11 +92,21 @@ public class JobServiceImpl implements JobService {
         }
     }
 
+
+
     @Override
-    public void changeStatus() {
+    public void changeStatusEndWork() {
      List<Job> jobList =   jobRepository.findByEndWork(LocalDate.now());
         for (Job job : jobList) {
             job.setStatus(StatusJobEnum.CLOSED);
+            jobRepository.save(job);
+        }
+    }
+
+    public void changeStatusStartWork(){
+        List<Job> jobList =   jobRepository.findBystartWork(LocalDate.now());
+        for (Job job : jobList) {
+            job.setStatus(StatusJobEnum.OPEN);
             jobRepository.save(job);
         }
     }
