@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Interview</title>
+    <link rel="stylesheet" th:href="@{/css/interviewCreate.css}" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+    <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+            integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"
+    />
+</head>
+<body>
+<div class="container">
+    <div class="left">
+        <div class="logo">
+            <img th:src="@{/img/logo_dev.jpeg}" alt="Anh Dev" />
+            <span>IMS</span>
+        </div>
+        <a th:href="@{/home}" class="fa-solid fa-house home"></a>
+        <a th:href="@{/candidate}" class="remain">
+            <i class="fa-solid fa-users"></i>
+            <div>Candidate</div>
+        </a>
+        <a th:href="@{/job}" class="remain">
+            <i class="fa-solid fa-briefcase"></i>
+            <div>Job</div>
+        </a>
+        <a th:href="@{/interview}" class="remain" style="background-color: #ccc">
+            <i class="fa-regular fa-comments"></i>
+            <div>Interview</div>
+        </a>
+        <a href="#" class="remain">
+            <i class="fa-regular fa-file-lines"></i>
+            <div>Offer</div>
+        </a>
+        <a th:href="@{/userList}" class="remain">
+            <i class="fa-solid fa-user-tag"></i>
+            <div>User</div>
+        </a>
+    </div>
+    <main class="main-content">
+        <div class="top-bar">
+            <h1>Interview Schedule</h1>
+            <div class="user-info">
+                <span class="material-icons user-icon">person</span>
+                <a class="logout">Logout</a>
+            </div>
+        </div>
+        <a style="color: inherit;" th:href="@{/interview}">Interview Schedule List</a>
+        <span> &gt; </span>
+        <a style="text-decoration: none ; color: inherit;" href="#">New Interview Schedule</a>
+
+        <div class="form-container">
+
+            <form class="schedule-form" th:action="@{/interview/createInterview}" th:object="${interviewPostDto}" method="post">
+                <div class="form-section form-section-half">
+                    <label for="title">Schedule title <span class="required">*</span></label>
+                    <input type="text" id="title" name="scheduleTitle" placeholder="Type a title..." th:field="*{scheduleTitle}">
+                    <div th:if="${#fields.hasErrors('scheduleTitle')}" th:errors="*{scheduleTitle}" class="error"></div>
+                </div>
+                <div class="form-section form-section-half">
+                    <label for="candidate">Candidate name <span class="required">*</span></label>
+                    <select id="candidate" name="candidateName" th:field="*{candidateName}">
+                        <option value="" disabled selected>Select a candidate...</option>
+                        <option th:each="candidateName : ${candidateList}" th:value="${candidateName.name}" th:text="${candidateName.name}"></option>
+                    </select>
+                    <div th:if="${#fields.hasErrors('candidateName')}" th:errors="*{candidateName}" class="error"></div>
+                </div>
+                <div class="form-section form-section-half">
+                    <label for="schedule-time">Schedule Time <span class="required">*</span></label>
+                    <input type="date" id="schedule-time" name="scheduleTime" th:field="*{scheduleTime}">
+                    <div th:if="${#fields.hasErrors('scheduleTime')}" th:errors="*{scheduleTime}" class="error"></div>
+                    <div class="time-input">
+                        <label for="start-time">From</label>
+                        <input type="time" id="start-time" name="scheduleFrom" th:field="*{scheduleFrom}">
+                        <div th:if="${#fields.hasErrors('scheduleFrom')}" th:errors="*{scheduleFrom}" class="error"></div>
+                    </div>
+                    <div class="time-input">
+                        <label for="end-time">To</label>
+                        <input type="time" id="end-time" name="scheduleTo" th:field="*{scheduleTo}">
+                        <div th:if="${#fields.hasErrors('scheduleTo')}" th:errors="*{scheduleTo}" class="error"></div>
+                    </div>
+                </div>
+                <div class="form-section form-section-half">
+                    <label for="job">Job <span class="required">*</span></label>
+                    <select id="job" name="job" th:field="*{job}">
+                        <option value="" disabled selected>Select a job...</option>
+                        <option th:each="job : ${jobsList}" th:value="${job.title}" th:text="${job.title}"></option>
+                    </select>
+                    <div th:if="${#fields.hasErrors('job')}" th:errors="*{job}" class="error"></div>
+                </div>
+                <div class="form-section form-section-half">
+                    <label for="interviewer">Interviewer <span class="required">*</span></label>
+                    <select id="interviewer" name="interview" multiple class="select2" th:field="*{interview}">
+                        <option th:each="interviewer : ${userInterviewerList}" th:value="${interviewer.username}" th:text="${interviewer.username}"></option>
+                    </select>
+                    <div th:if="${#fields.hasErrors('interview')}" th:errors="*{interview}" class="error"></div>
+                </div>
+                <div class="form-section form-section-half">
+                    <label for="location">Location</label>
+                    <input type="text" id="location" name="location" placeholder="Type a location" th:field="*{location}">
+                    <div th:if="${#fields.hasErrors('location')}" th:errors="*{location}" class="error"></div>
+                </div>
+                <div class="form-section form-section-half">
+                    <label for="recruiter">Recruiter owner <span class="required">*</span></label>
+                    <select id="recruiter" name="recruiterOwner" th:field="*{recruiterOwner}">
+                        <option value="" disabled selected>Select a Recruiter...</option>
+                        <option th:each="recruiter : ${userList}" th:value="${recruiter.username}" th:text="${recruiter.username}"></option>
+                    </select>
+                    <div th:if="${#fields.hasErrors('recruiterOwner')}" th:errors="*{recruiterOwner}" class="error"></div>
+                </div>
+                <div class="form-section">
+                    <label for="notes">Notes</label>
+                    <textarea id="notes" name="notes" placeholder="Type schedule note..." th:field="*{notes}"></textarea>
+                    <div th:if="${#fields.hasErrors('notes')}" th:errors="*{notes}" class="error"></div>
+                </div>
+                <div class="form-section">
+                    <label for="meeting-id">Meeting ID</label>
+                    <input type="url" id="meeting-id" name="meetingID" placeholder="meet.google.com/xyz-hij-123" th:field="*{meetingID}">
+                    <div th:if="${#fields.hasErrors('meetingID')}" th:errors="*{meetingID}" class="error"></div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit">Submit</button>
+                    <button type="button"><a style="text-decoration: none ; color: inherit;" th:href="@{/interview}">Cancel</a></button>
+                </div>
+            </form>
+        </div>
+    </main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('.select2').select2({
+            placeholder: "Select interviewers",
+            allowClear: true
+        });
+    });
+</script>
+</body>
+</html>

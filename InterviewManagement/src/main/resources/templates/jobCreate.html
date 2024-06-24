@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Job</title>
+    <link rel="stylesheet" th:href="@{/css/jobCreate.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+          integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+          crossorigin="anonymous" referrerpolicy="no-referrer">
+</head>
+<body>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Select2 CSS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+
+<!-- Select2 JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
+<div class="container">
+    <div class="left">
+        <div class="logo">
+            <img th:src="@{/img/logo_dev.jpeg}" alt="Anh Dev" />
+            <span>IMS</span>
+        </div>
+        <a th:href="@{/home}" class="fa-solid fa-house home"></a>
+        <a th:href="@{/candidate}" class="remain">
+            <i class="fa-solid fa-users"></i>
+            <div>Candidate</div>
+        </a>
+        <a th:href="@{/job}" class="remain">
+            <i class="fa-solid fa-briefcase"></i>
+            <div>Job</div>
+        </a>
+        <a th:href="@{/interviewList}" class="remain">
+            <i class="fa-regular fa-comments"></i>
+            <div>Interview</div>
+        </a>
+        <a href="#" class="remain">
+            <i class="fa-regular fa-file-lines"></i>
+            <div>Offer</div>
+        </a>
+        <a th:href="@{/userList}" class="remain">
+            <i class="fa-solid fa-user-tag"></i>
+            <div>User</div>
+        </a>
+    </div>
+    <div class="main-content">
+        <div class="right_head">
+            <div class="title">Job</div>
+            <div>
+                <i class="fa-solid fa-user"></i>
+                <button onclick="confirmExit()">Log out</button>
+            </div>
+        </div>
+        <a
+                th:href="@{/job}"
+                style="margin: 0 0 10px 45px; text-decoration: underline"
+        >
+            Job List
+        </a>
+        <i style="margin: 0 10px" class="fa-solid fa-chevron-right"></i>
+        <a href="#" style="text-decoration: underline">Create job</a>
+
+        <div class="form-container">
+            <form th:action="@{/create-job}" th:object="${jobcreate}" method="post">
+                <div class="form-group">
+                    <label for="job-title">Job title *</label>
+                    <input type="text" id="job-title" th:field="*{title}" name="job-title" placeholder="Type a title...">
+                    <div class="error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="skill">Skills *</label>
+                    <select id="skill" name="skill" th:field="*{skill}" multiple="multiple" required>
+                        <option value="Java" th:selected="${jobcreate.skill != null and jobcreate.skill ==('Java')}">Java</option>
+                        <option value="Nodejs" th:selected="${jobcreate.skill != null and jobcreate.skill==('Nodejs')}">Nodejs</option>
+                        <option value=".Net" th:selected="${jobcreate.skill != null and jobcreate.skill==('.Net')}">.Net</option>
+                        <option value="C++" th:selected="${jobcreate.skill != null and jobcreate.skill==('C++')}">C++</option>
+                        <option value="Business analysis" th:selected="${jobcreate.skill != null and jobcreate.skill==('Business analysis')}">Business analysis</option>
+                        <option value="Communication" th:selected="${jobcreate.skill != null and jobcreate.skill==('Communication')}">Communication</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="start-date">Start Date *</label>
+                    <input type="date" id="start-date" name="start-date" th:field="*{startWork}" required>
+                    <div class="error" th:if="${#fields.hasErrors('startWork')}" th:errors="*{startWork}"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="end-date">End Date *</label>
+                    <input type="date" id="end-date" name="end-date" th:field="*{endWork}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="salary-from">Salary Range *</label>
+                    <div class="salary-range">
+                        <span>From</span>
+                        <input type="text" id="salary-from" name="salary-from" th:field="*{fr}" placeholder="From">
+                        <span>To</span>
+                        <input type="text" id="salary-to" name="salary-to" th:field="*{t}" placeholder="To">
+                    </div>
+                    <div class="error" th:if="${#fields.hasErrors('fr')}">
+                        <p th:each="err : ${#fields.errors('fr')}" th:text="${err}"></p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="benefits">Benefits *</label>
+                    <select id="benefits" name="benefits" th:field="*{benefits}" multiple="multiple" required>
+                        <option value="Travel" th:selected="${jobcreate.benefits != null and jobcreate.benefits.contains('Travel')}">Travel</option>
+                        <option value="25-day leave" th:selected="${jobcreate.benefits != null and jobcreate.benefits.contains('25-day leave')}">25-day leave</option>
+                        <option value="Hybrid working" th:selected="${jobcreate.benefits != null and jobcreate.benefits.contains('Hybrid working')}">Hybrid working</option>
+                        <option value="Lunch" th:selected="${jobcreate.benefits != null and jobcreate.benefits.contains('Lunch')}">Lunch</option>
+                        <option value="Healthcare insurance" th:selected="${jobcreate.benefits != null and jobcreate.benefits.contains('Healthcare insurance')}">Healthcare insurance</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="working-address">Working address</label>
+                    <input type="text" id="working-address" name="working-address" placeholder="Type an address" th:field="*{address}">
+                </div>
+
+                <div class="form-group">
+                    <label for="level">Level *</label>
+                    <select id="level" name="level" th:field="*{level}" multiple="multiple" required>
+                        <option value="master" th:selected="${jobcreate.level != null and jobcreate.level.contains('master')}">Master</option>
+                        <option value="junior" th:selected="${jobcreate.level != null and jobcreate.level.contains('junior')}">Junior</option>
+                        <option value="Senior" th:selected="${jobcreate.level != null and jobcreate.level.contains('Senior')}">Senior</option>
+                        <option value="Leader" th:selected="${jobcreate.level != null and jobcreate.level.contains('Leader')}">Leader</option>
+                        <option value="Manager" th:selected="${jobcreate.level != null and jobcreate.level.contains('Manager')}">Manager</option>
+                        <option value="VH" th:selected="${jobcreate.level != null and jobcreate.level.contains('VH')}">Vice Head</option>
+                    </select>
+                </div>
+
+                <div class="form-group description">
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description" placeholder="Type description" th:field="*{description}"></textarea>
+                </div>
+
+                <div class="form-buttons">
+                    <button type="submit">Submit</button>
+                    <a class="cancel" th:href="@{/job}">Cancle</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        $('#skill, #benefits, #level').select2({
+            placeholder: "Select options",
+            tags: true,
+            tokenSeparators: [',', ' ']
+        });
+    });
+</script>
+</body>
+</html>

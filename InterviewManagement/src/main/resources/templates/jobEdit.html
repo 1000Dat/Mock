@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Job</title>
+    <link rel="stylesheet" th:href="@{/css/jobEdit.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+          integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+          crossorigin="anonymous" referrerpolicy="no-referrer">
+    <!-- Select2 CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+</head>
+<body>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<div class="container">
+    <div class="left">
+        <div class="logo">
+            <img th:src="@{/img/logo_dev.jpeg}" alt="Anh Dev" />
+            <span>IMS</span>
+        </div>
+        <a th:href="@{/home}" class="fa-solid fa-house home"></a>
+        <a th:href="@{/candidate}" class="remain">
+            <i class="fa-solid fa-users"></i>
+            <div>Candidate</div>
+        </a>
+        <a th:href="@{/job}" class="remain">
+            <i class="fa-solid fa-briefcase"></i>
+            <div>Job</div>
+        </a>
+        <a th:href="@{/interviewList}" class="remain">
+            <i class="fa-regular fa-comments"></i>
+            <div>Interview</div>
+        </a>
+        <a href="#" class="remain">
+            <i class="fa-regular fa-file-lines"></i>
+            <div>Offer</div>
+        </a>
+        <a th:href="@{/userList}" class="remain">
+            <i class="fa-solid fa-user-tag"></i>
+            <div>User</div>
+        </a>
+    </div>
+    <div class="main-content">
+        <div class="right_head">
+            <div class="title">Job</div>
+            <div>
+                <i class="fa-solid fa-user"></i>
+                <button onclick="confirmExit()">Log out</button>
+            </div>
+        </div>
+        <a
+                th:href="@{/job}"
+                style="margin: 0 0 10px 45px; text-decoration: underline"
+        >
+            Job List
+        </a>
+        <i style="margin: 0 10px" class="fa-solid fa-chevron-right"></i>
+        <a href="#" style="text-decoration: underline"
+        >Edit job</a
+        >
+
+        <div class="form-container">
+            <form action="#" th:action="@{/update-job}" th:object="${jobDto}" method="post">
+                <div class="job-info">
+                    <div class="column">
+                        <label for="job-title"><strong>Job title:</strong></label>
+                        <input type="hidden" th:field="*{jobId}">
+                        <input type="text" id="job-title" name="job-title" th:field="*{title}">
+                        <div class="error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
+
+                        <label for="start-date"><strong>Start Date:</strong></label>
+                        <input type="date" id="start-date" name="start-date" th:field="*{startWork}">
+                        <div class="error" th:if="${#fields.hasErrors('startWork')}" th:errors="*{startWork}"></div>
+
+
+                        <div class="salary-range">
+                            <label><strong>Salary Range:</strong></label>
+                            <input type="text" id="salary-from" name="salary-from" th:field="*{fr}">
+                            <span>to</span>
+                            <input type="text" id="salary-to" name="salary-to" th:field="*{t}">
+
+                            <!-- Display error only if 'fr' is greater than 't' -->
+
+                            <div class="error" th:if="${#fields.hasErrors('fr')}">
+                                <p th:each="err : ${#fields.errors('fr')}" th:text="${err}"></p>
+                            </div>
+                        </div>
+
+                        <label for="working-address"><strong>Working address:</strong></label>
+                        <input type="text" id="working-address" name="working-address" th:field="*{address}">
+
+                        <label for="status"><strong>Status:</strong></label>
+                        <select name="status" id="status" th:field="*{status}">
+                            <option value="OPEN" th:selected="${jobDto.status == 'OPEN'}">OPEN</option>
+                            <option value="CLOSED" th:selected="${jobDto.status == 'CLOSED'}">CLOSED</option>
+                            <option value="DRAFT" th:selected="${jobDto.status == 'DRAFT'}">DRAFT</option>
+                        </select>
+                    </div>
+                    <div class="column">
+                        <label for="skill"><strong>Skills:</strong></label>
+                        <select id="skill" name="skill" required multiple="multiple">
+                            <option value="Java" th:selected="${jobDto.skill != null and jobDto.skill.contains('Java')}">Java</option>
+                            <option value="Nodejs" th:selected="${jobDto.skill != null and jobDto.skill.contains('Nodejs')}">Nodejs</option>
+                            <option value=".Net" th:selected="${jobDto.skill != null and jobDto.skill.contains('.Net')}">.Net</option>
+                            <option value="C++" th:selected="${jobDto.skill != null and jobDto.skill.contains('C++')}">C++</option>
+                            <option value="Business analysis" th:selected="${jobDto.skill != null and jobDto.skill.contains('Business analysis')}">Business analysis</option>
+                            <option value="Communication" th:selected="${jobDto.skill != null and jobDto.skill.contains('Communication')}">Communication</option>
+                        </select>
+
+                        <label for="end-date"><strong>End Date:</strong></label>
+                        <input type="date" id="end-date" name="end-date" th:field="${jobDto.endWork}">
+
+                        <label for="benefits"><strong>Benefits:</strong></label>
+                        <select id="benefits" name="benefits" required  multiple="multiple">
+                            <option value="Travel" th:selected="${jobDto.benefits != null and jobDto.benefits.contains('Travel')}">Travel</option>
+                            <option value="25-day leave" th:selected="${jobDto.benefits != null and jobDto.benefits.contains('25-day leave')}">25-day leave</option>
+                            <option value="Hybrid working" th:selected="${jobDto.benefits != null and jobDto.benefits.contains('Hybrid working')}">Hybrid working</option>
+                            <option value="Lunch" th:selected="${jobDto.benefits != null and jobDto.benefits.contains('Lunch')}">Lunch</option>
+                            <option value="Healthcare insurance" th:selected="${jobDto.benefits != null and jobDto.benefits.contains('Healthcare insurance')}">Healthcare insurance</option>
+                        </select>
+
+                        <label for="level"><strong>Level:</strong></label>
+                        <select id="level" name="level" required  multiple="multiple">
+                            <option value="master" th:selected="${jobDto.level != null and jobDto.level.contains('master')}">Master</option>
+                            <option value="junior" th:selected="${jobDto.level != null and jobDto.level.contains('junior')}">Junior</option>
+                            <option value="Senior" th:selected="${jobDto.level != null and jobDto.level.contains('Senior')}">Senior</option>
+                            <option value="Leader" th:selected="${jobDto.level != null and jobDto.level.contains('Leader')}">Leader</option>
+                            <option value="Manager" th:selected="${jobDto.level != null and jobDto.level.contains('Manager')}">Manager</option>
+                            <option value="VH" th:selected="${jobDto.level != null and jobDto.level.contains('VH')}">Vice Head</option>
+                        </select>
+
+                        <label for="description"><strong>Description:</strong></label>
+                        <textarea id="description" name="description" th:text="${jobDto.description}"></textarea>
+                    </div>
+                </div>
+                <div class="actions">
+                    <button type="submit" class="edit">Submit</button>
+                    <a class="cancel" th:href="@{/job}">Cancle</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Select2 JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#skill, #benefits, #level').select2({
+            placeholder: "Select options",
+            tags: true,
+            tokenSeparators: [',', ' ']
+        });
+    });
+</script>
+
+</body>
+</html>

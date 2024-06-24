@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Interview</title>
+    <link rel="stylesheet" th:href="@{/css/interview.css}" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+            integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"
+    />
+</head>
+<body>
+<div class="container">
+    <div class="left">
+        <div class="logo">
+            <img th:src="@{/img/logo_dev.jpeg}" alt="Anh Dev" />
+            <span>IMS</span>
+        </div>
+        <a th:href="@{/home}" class="fa-solid fa-house home"></a>
+        <a th:href="@{/candidate}" class="remain">
+            <i class="fa-solid fa-users"></i>
+            <div>Candidate</div>
+        </a>
+        <a th:href="@{/job}" class="remain">
+            <i class="fa-solid fa-briefcase"></i>
+            <div>Job</div>
+        </a>
+        <a th:href="@{/interview}" class="remain" style="background-color: #ccc">
+            <i class="fa-regular fa-comments"></i>
+            <div>Interview</div>
+        </a>
+        <a href="#" class="remain">
+            <i class="fa-regular fa-file-lines"></i>
+            <div>Offer</div>
+        </a>
+        <a th:href="@{/userList}" class="remain">
+            <i class="fa-solid fa-user-tag"></i>
+            <div>User</div>
+        </a>
+    </div>
+    <main class="main-content">
+        <div class="top-bar">
+            <h1>Interview</h1>
+            <div class="user-info">
+                <span class="material-icons user-icon">person</span>
+                <a class="logout">Logout</a>
+            </div>
+        </div>
+        <header>
+            <div class="header-left">
+                <form th:action="@{/interview}" method="get">
+                    <input type="text" class="search-bar" name="keyword" placeholder="Search" th:value="${keyword}">
+                    <select class="status-combobox" name="status">
+                        <option value="">Status</option>
+                        <option value="New" th:selected="${status == 'New'}">New</option>
+                        <option value="Invited" th:selected="${status == 'Invited'}">Invited</option>
+                        <option value="Interviewed" th:selected="${status == 'Interviewed'}">Interviewed</option>
+                        <option value="Cancelled" th:selected="${status == 'Cancelled'}">Cancelled</option>
+                    </select>
+                    <button type="submit" class="search-button">Search</button>
+                </form>
+            </div>
+            <button class="add-new-button"> <a th:href="@{/interview/showCreate}">Add New</a></button>
+        </header>
+        <section class="candidate-list">
+            <table>
+                <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Candidate Name</th>
+                    <th>Interviewer</th>
+                    <th>Schedule</th>
+                    <th>Job</th>
+                    <th>Result</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody style="background-color: lightblue">
+                <tr th:each="interview : ${interviewLists}">
+                    <input type="hidden" th:value="${interview.interviewId}">
+                    <td th:text="${interview.title}"></td>
+                    <td th:text="${interview.candidateName}"></td>
+                    <td th:text="${interview.interviewer}"></td>
+                    <td th:text="${interview.schedule}"></td>
+                    <td th:text="${interview.job}"></td>
+                    <td th:text="${interview.result}"></td>
+                    <td th:text="${interview.status}"></td>
+                    <td>
+                        <span class="material-icons"><a style="text-decoration: none ; color: inherit;"  th:href="@{/interview/ViewInterview/{id}(id=${interview.interviewId})}">visibility</a></span>
+                        <span class="material-icons"><a style="text-decoration: none ; color: inherit;"  th:href="@{/interview/showEdit/{id}(id=${interview.interviewId})}">edit</a></span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div th:if="${totalPage > 1}" class="pagination-container">
+                <div class="total-rows">
+                   <p> Total Rows: [[${totalElement}]]   </p>
+                </div>
+                <div class="pagination-controls">
+                    <a th:if="${currentPage >= 1}" th:href="@{'/interview?page=' + ${currentPage - 1}}">&lt;</a>
+                    <span th:unless="${currentPage != 0}" class="disabled">&lt;</span>
+
+                    <div class="pagination-page-numbers">
+            <span th:each="i: ${#numbers.sequence(1, totalPage)}">
+                <a th:if="${currentPage != i - 1}" th:href="@{'/interview?page=' + ${i - 1}}">[[${i}]]</a>
+                <span th:unless="${currentPage != i - 1}" class="current">[[${i}]]</span> &nbsp; &nbsp;
+            </span>
+                    </div>
+
+                    <a th:if="${currentPage < totalPage - 1}" th:href="@{'/interview?page=' + ${currentPage + 1}}">&gt;</a>
+                    <span th:unless="${currentPage < totalPage - 1}" class="disabled">&gt;</span>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+
+</body>
+</html>

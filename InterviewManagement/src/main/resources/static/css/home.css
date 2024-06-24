@@ -1,0 +1,148 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+}
+
+.container{
+    display: flex;
+    /* flex-wrap: wrap; */
+    height: 100vh;
+}
+
+.left{
+    width: 20%;
+    text-align: center;
+    background-color: navajowhite;
+}
+
+.logo{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 30px;
+}
+
+.left img{
+    width: 60px;
+    height: 50px;
+    margin-right: 10px;
+}
+
+.left span{
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.left a{
+    text-decoration: none;
+    color: black;
+}
+
+.left .home {
+    padding: 20px;
+    display: block;
+    background-color: #ccc;
+}
+
+.left .home:hover {
+    background-color:beige ;
+}
+
+.left .remain{
+    padding: 20px;
+    display: block;
+}
+
+.left .remain:hover{
+    background-color:beige ;
+}
+
+.left .remain div{
+    margin-top: 5px;
+}
+
+.right {
+    width: 80%;
+    display: flex;
+    justify-content: space-between;
+    margin: 30px 35px;
+    align-items: baseline;
+}
+
+.title {
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.logout{
+    text-decoration: underline;
+    cursor: pointer;
+    margin-left: 5px;
+}
+
+.logout:hover{
+    text-decoration: none;
+    color: #cccccc;
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    display: none; /* Hidden by default */
+}
+
+.dialog {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    text-align: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.dialog p {
+    margin: 0 0 20px;
+}
+
+.dialog button {
+    padding: 10px 20px;
+    margin: 0 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.dialog .btn-yes {
+    background-color: cornflowerblue;
+    color: white;
+    padding: 10px 20px;
+    margin: 0 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.dialog .btn-no {
+    background-color: gray;
+    color: white;
+}
+
+.dialog .btn-yes:hover {
+    background-color: blue;
+}
+
+.dialog .btn-no:hover {
+    background-color:darkgray;
+}
+
+

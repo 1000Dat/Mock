@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Interview</title>
+    <link rel="stylesheet" th:href="@{/css/interviewView.css}" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+            integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"
+    />
+    <style>
+        .modal {
+            display: none; /* Ẩn modal mặc định */
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4); /* Màu nền, độ mờ */
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 20% auto; /* Điều chỉnh vị trí modal xuống 20% từ top */
+            padding: 10px; /* Giảm padding của modal */
+            border: 1px solid #888;
+            width: 30%; /* Giảm chiều rộng của modal xuống 30% */
+            text-align: center;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        }
+
+        .modal-content p {
+            margin-bottom: 30px; /* Thêm khoảng cách giữa nội dung và các nút */
+        }
+
+        .modal-content div button {
+            margin: 30px; /* Thêm khoảng cách giữa các nút */
+        }
+
+
+        .close {
+            color: #aaaaaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="left">
+        <div class="logo">
+            <img th:src="@{/img/logo_dev.jpeg}" alt="Anh Dev" />
+            <span>IMS</span>
+        </div>
+        <a th:href="@{/home}" class="fa-solid fa-house home"></a>
+        <a th:href="@{/candidate}" class="remain">
+            <i class="fa-solid fa-users"></i>
+            <div>Candidate</div>
+        </a>
+        <a th:href="@{/job}" class="remain">
+            <i class="fa-solid fa-briefcase"></i>
+            <div>Job</div>
+        </a>
+        <a th:href="@{/interview}" class="remain" style="background-color: #ccc">
+            <i class="fa-regular fa-comments"></i>
+            <div>Interview</div>
+        </a>
+        <a href="#" class="remain">
+            <i class="fa-regular fa-file-lines"></i>
+            <div>Offer</div>
+        </a>
+        <a th:href="@{/userList}" class="remain">
+            <i class="fa-solid fa-user-tag"></i>
+            <div>User</div>
+        </a>
+    </div>
+    <main class="main-content">
+        <div class="top-bar">
+            <h1>Interview Schedule</h1>
+            <div class="user-info">
+                <span class="material-icons user-icon">person</span>
+                <a class="logout">Logout</a>
+            </div>
+        </div>
+
+        <div class="from-container">
+            <a style=" color: inherit;" th:href="@{/interview}" >Interview Schedule List</a>
+            <span> &gt; </span>
+            <a style="text-decoration: none ; color: inherit;" th:href="@{/interview/showCreate}">Interview Schedule Details</a>
+            <button style="float: right" class="add-new-button" th:onclick="'openModal(' + ${viewInterviewDto.interviewId} + ')'">Cancel Schedule</button>
+            <button style="float: right" class="add-new-button" >Send To Email</button>
+
+            <div class="job-details">
+                <div class="form-group">
+                    <label>Schedule Title: </label> <span th:text="${viewInterviewDto.title}"></span>
+                </div>
+                <div class="form-group">
+                    <label>Candidate Name: </label> <span th:text="${viewInterviewDto.candidateName}"></span>
+                </div>
+                <div class="form-group">
+                    <label>Schedule Time: </label> <span th:text="${viewInterviewDto.schedule}"></span>
+                </div>
+                <div class="form-group">
+                    <label>Job: </label> <span th:text="${viewInterviewDto.job}"></span>
+                </div>
+                <div class="form-group">
+                    <label>Interviewer: </label> <span th:text="${viewInterviewDto.interviewer}"></span>
+                </div>
+                <div class="form-group">
+                    <label>Location: </label>  <span th:text="${viewInterviewDto.location}"></span>
+                </div>
+                <div class="form-group">
+                    <label>Recruiter owner: </label> <span th:text="${viewInterviewDto.recruiterOwner}"></span>
+                </div>
+                <div class="form-group">
+                    <label>Meeting ID: </label> <span th:text="${viewInterviewDto.meetingID}"></span>
+                </div>
+                <div class="form-group">
+                    <label>Result: </label> <span th:text="${viewInterviewDto.result}"></span>
+                </div>
+                <div class="form-group">
+                    <label>Status: </label> <span th:text="${viewInterviewDto.status}"></span>
+                </div>
+                <div class="form-actions">
+                    <button type="button"> <a th:href="@{/interview/showEdit/{id}(id=${viewInterviewDto.interviewId})}">Edit</a></button>
+                    <button type="button"><a th:href="@{/interview}">Cancel</a></button>
+                </div>
+            </div>
+        </div>
+    </main>
+    <div id="cancelModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <p>Are you sure you want to cancel the schedule?</p>
+            <div>
+                <button onclick="confirmCancellation()">Yes</button>
+                <button onclick="closeModal()">No</button>
+            </div>
+        </div>
+    </div>
+    <form id="cancelForm" th:action="@{/interview/cancelSchedule}" method="post" style="display:none;">
+        <input type="hidden" name="id" id="id" th:value="${id}">
+    </form>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    // Function to open the modal and set the schedule ID
+    window.openModal = function(id) {
+        $('#id').val(id); // Set the schedule ID in the hidden form
+        $('#cancelModal').css('display', 'block'); // Show the modal
+    };
+
+    // Function to close the modal
+    window.closeModal = function() {
+        $('#cancelModal').css('display', 'none'); // Hide the modal
+    };
+
+    // Function to submit the cancellation form
+    window.confirmCancellation = function() {
+        $('#cancelForm').submit(); // Submit the hidden form
+    };
+</script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+spring:
+  datasource:
+    url: jdbc:sqlserver://localhost;databaseName=master;encrypt = false
+    username: sa
+    password: Fsoft123!
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+  jpa:
+    database-platform: org.hibernate.dialect.SQLServerDialect
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+  springdoc:
+    api-docs:
+      path: /api-docs
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: vuduynsl@gmail.com
+    password: shmkydmkkjoxcjpz
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
