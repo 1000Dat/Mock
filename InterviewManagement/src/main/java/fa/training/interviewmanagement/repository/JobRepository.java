@@ -27,4 +27,7 @@ public interface JobRepository extends JpaRepository<Job, Integer> {
 
     @Query("SELECT j FROM Job j WHERE j.endWork < :date")
     List<Job> findByEndWork(LocalDate date);
+
+    @Query("SELECT j FROM Job j WHERE j.startWork >= :date")
+    List<Job> findBystartWork(LocalDate date);
 }

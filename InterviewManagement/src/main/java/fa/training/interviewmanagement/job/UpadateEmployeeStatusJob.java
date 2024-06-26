@@ -14,11 +14,20 @@ public class UpadateEmployeeStatusJob {
     @Autowired
     JobService jobService;
 
-    @Scheduled(cron = "${service.job-demo-execute-on: 0 */1 * * * *}")
-    public void onExecute(){
+    @Scheduled(cron = " 0 */1 * * * *")
+    public void setStartWork(){
         log.info("UpadateEmployeeStatusJob start on: {}", LocalDateTime.now());
 
-        jobService.changeStatus();
+        jobService.changeStatusStartWork();
+        log.info("UpadateEmployeeStatusJob finished on: {}", LocalDateTime.now());
+
+    }
+
+    @Scheduled(cron = "0 0 0 * * *")
+    public void setEndWork(){
+        log.info("UpadateEmployeeStatusJob start on: {}", LocalDateTime.now());
+
+        jobService.changeStatusEndWork();
         log.info("UpadateEmployeeStatusJob finished on: {}", LocalDateTime.now());
 
     }

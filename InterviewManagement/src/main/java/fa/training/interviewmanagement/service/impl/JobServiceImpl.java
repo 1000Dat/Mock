@@ -1,10 +1,14 @@
 package fa.training.interviewmanagement.service.impl;
 
 import fa.training.interviewmanagement.entity.Job;
+import fa.training.interviewmanagement.entity.UploadHistoryEntity;
+import fa.training.interviewmanagement.entity.UserEntity;
 import fa.training.interviewmanagement.model.job.JobDto;
 import fa.training.interviewmanagement.model.job.JobGetResponse;
 import fa.training.interviewmanagement.model.job.StatusJobEnum;
+import fa.training.interviewmanagement.model.job.StatusUploadHistoryEnum;
 import fa.training.interviewmanagement.repository.JobRepository;
+import fa.training.interviewmanagement.repository.UploadHistoryRepository;
 import fa.training.interviewmanagement.service.JobService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,6 +24,8 @@ import java.util.stream.Collectors;
 public class JobServiceImpl implements JobService {
     @Autowired
     private JobRepository jobRepository;
+    @Autowired
+    private UploadHistoryRepository uploadHistoryRepository;
 
     public void createJob(JobDto jobDto){
         Job job = new Job();
@@ -92,14 +98,29 @@ public class JobServiceImpl implements JobService {
         }
     }
 
+
+
     @Override
-    public void changeStatus() {
+    public void changeStatusEndWork() {
      List<Job> jobList =   jobRepository.findByEndWork(LocalDate.now());
         for (Job job : jobList) {
             job.setStatus(StatusJobEnum.CLOSED);
             jobRepository.save(job);
         }
     }
+
+    public void changeStatusStartWork(){
+        List<Job> jobList =   jobRepository.findBystartWork(LocalDate.now());
+        for (Job job : jobList) {
+            job.setStatus(StatusJobEnum.OPEN);
+            jobRepository.save(job);
+        }
+    }
+//    public boolean checkLatestUploadStatus(UserEntity userId) {
+//        StatusUploadHistoryEnum failStatus = StatusUploadHistoryEnum.FAILURE;
+//        UploadHistoryEntity latestUpload = (UploadHistoryEntity) uploadHistoryRepository.findByStatusAndUserId(failStatus, userId);
+//        return latestUpload != null;
+//    }
 
 
 }

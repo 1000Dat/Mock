@@ -6,7 +6,7 @@ import fa.training.interviewmanagement.entity.UserEntity;
 import fa.training.interviewmanagement.model.job.JobDto;
 import fa.training.interviewmanagement.model.job.JobGetResponse;
 import fa.training.interviewmanagement.model.job.StatusUploadHistoryEnum;
-import fa.training.interviewmanagement.model.user.UploadHistoryRepository;
+import fa.training.interviewmanagement.repository.UploadHistoryRepository;
 import fa.training.interviewmanagement.repository.JobRepositoryCustom;
 import fa.training.interviewmanagement.repository.UserRepository;
 import fa.training.interviewmanagement.service.ExcelService;
@@ -16,7 +16,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
-import org.apache.poi.ss.usermodel.Picture;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -220,6 +219,8 @@ public class JobController {
 
     @PostMapping("/update-job")
     public String saveJob(@ModelAttribute("jobDto") @Valid JobDto jobDto, BindingResult result, RedirectAttributes redirectAttributes, Model model) {
+        validateProcessor.validateTitle(jobDto,result);
+        validateProcessor.validateScheduleTime(jobDto, result);
         if (validateProcessor.isValidate(result, jobDto).hasErrors()) {
             // Đưa jobDto vào model để hiển thị trên view
             model.addAttribute("jobDto", jobDto);
