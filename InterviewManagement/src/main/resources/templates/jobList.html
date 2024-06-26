@@ -66,7 +66,7 @@
         <div class="button-container">
 
 
-            <div th:if="${isDisplayDownload}">
+            <div th:if="${isDisplayDownload}" >
                 <a href="/files/download" style="text-decoration: none; width: fit-content; margin-left: 20px">
                     <button  style="
                         display: inline-block;
@@ -240,7 +240,18 @@
                 document.getElementById('uploadForm').submit();
             }
         };
+
+
     }
+
+    // document.addEventListener('DOMContentLoaded', function() {
+    //     setTimeout(function() {
+    //         var downloadButton = document.getElementById('downloadButton');
+    //         if (downloadButton) {
+    //             downloadButton.style.display = 'none';
+    //         }
+    //     }, 20000); // 20 seconds in milliseconds
+    // });
 </script>
 </body>
 </html>
