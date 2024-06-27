@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Details</title>
+    <link rel="stylesheet" th:href="@{/css/JobDetail.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+<div class="container">
+    <div class="left">
+        <div class="logo">
+            <img th:src="@{/img/logo_dev.jpeg}" alt="Anh Dev"/>
+            <span>IMS</span>
+        </div>
+        <a th:href="@{/home}" class="fa-solid fa-house home"></a>
+        <a th:href="@{/candidate}" class="remain">
+            <i class="fa-solid fa-users"></i>
+            <div>Candidate</div>
+        </a>
+        <a th:href="@{/job}" class="remain">
+            <i class="fa-solid fa-briefcase"></i>
+            <div>Job</div>
+        </a>
+        <a th:href="@{/interviewList}" class="remain">
+            <i class="fa-regular fa-comments"></i>
+            <div>Interview</div>
+        </a>
+        <a href="#" class="remain">
+            <i class="fa-regular fa-file-lines"></i>
+            <div>Offer</div>
+        </a>
+        <a th:href="@{/userList}" class="remain">
+            <i class="fa-solid fa-user-tag"></i>
+            <div>User</div>
+        </a>
+    </div>
+    <div class="right">
+        <div class="right_head">
+            <div class="title">Job</div>
+            <div>
+                <i class="fa-solid fa-user"></i>
+                <button onclick="confirmExit()">Log out</button>
+            </div>
+        </div>
+        <a th:href="@{/job}" style="margin: 0 0 10px 45px; text-decoration: underline">Job List</a>
+        <i style="margin: 0 10px" class="fa-solid fa-chevron-right"></i>
+        <a href="#" style="text-decoration: underline">Job Details</a>
+
+        <div class="job-details">
+            <div class="job-info">
+                <div class="column">
+                    <p><strong>Job title:</strong> <span th:text="${job.title}"></span></p>
+                    <p><strong>Start Date:</strong> <span th:text="${job.startWork}"></span></p>
+                    <p><strong>Salary Range:</strong> From<span th:text="${job.fr}"></span> VND To<span
+                            th:text="${job.t}"></span> VND</p>
+                    <p><strong>Working address:</strong> <span th:text="${job.address}"></span></p>
+                    <p><strong>Status:</strong> <span th:text="${job.status}"></span></p>
+                </div>
+                <div class="column">
+                    <p><strong>Skills:</strong> <span th:text="${job.skill}"></span></p>
+                    <p><strong>End Date:</strong> <span th:text="${job.endWork}"></span></p>
+                    <p><strong>Benefits:</strong> <span th:text="${job.benefits}"></span></p>
+                    <p><strong>Level:</strong> <span th:text="${job.level}"></span></p>
+                    <p><strong>Description:</strong> <span th:text="${job.description}"></span></p>
+                </div>
+            </div>
+            <div class="actions">
+                <a th:href="@{/job}"><button class="cancel" >Cancel</button></a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>
