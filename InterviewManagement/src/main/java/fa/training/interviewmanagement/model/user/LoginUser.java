@@ -11,4 +11,5 @@ import lombok.NoArgsConstructor;
 public class LoginUser extends UserEntity {
     private String email;
     private String note;
+    private String status;
 }

@@ -15,9 +15,9 @@ import java.util.stream.Collectors;
 
 @Log4j2
 public class ExcelLogWriter {
-    private static final String TEMP_FILE_PATH = "src/main/resources/edited_template.xlsx"; // Đường dẫn tệp tạm thời tùy chỉnh
+    private static final String TEMP_FILE_PATH = "src/main/resources/edited_template.xlsx";
 
-    public static void writeLogToExcel(int totalRow, int countFail, int countSuccess, List<String> errors) {
+    public static void writeLogToExcel(int totalRow, int countFail, int countSuccess, List<String> errors) throws IOException {
         // Loại bỏ các chuỗi rỗng từ danh sách errors
         List<String> filteredErrors = errors.stream()
                 .filter(error -> !error.trim().isEmpty())
@@ -42,7 +42,6 @@ public class ExcelLogWriter {
             headerRow.createCell(0).setCellValue("Total Of Job");
             headerRow.createCell(1).setCellValue("Number Of Success");
             headerRow.createCell(2).setCellValue("Number Of Fail");
-
 
             // Create data row
             Row dataRow = sheet.createRow(1);
@@ -72,3 +71,4 @@ public class ExcelLogWriter {
         }
     }
 }
+

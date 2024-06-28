@@ -9,7 +9,6 @@ import java.util.List;
 
 @Entity
 @Data
-@Table(schema = "mock")
 public class Candidate {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -13,7 +13,6 @@ public interface JobService {
     Job findById(Integer jobId);
     List<Job> searchJob(String key);
     Job updateJob(Integer id, JobDto jobDetails);
-
     void changeStatusEndWork();
     void changeStatusStartWork();
 }

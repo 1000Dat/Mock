@@ -12,7 +12,6 @@ import java.util.List;
 @Entity
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Table(schema = "mock")
 public class Job {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

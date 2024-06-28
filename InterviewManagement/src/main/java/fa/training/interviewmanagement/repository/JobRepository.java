@@ -12,7 +12,6 @@ import java.util.List;
 @Repository
 public interface JobRepository extends JpaRepository<Job, Integer> {
     Job findFirstByTitle(String title);
-
     void deleteById(Integer id);
 
     @Query("SELECT j FROM Job j WHERE " +
@@ -20,7 +19,7 @@ public interface JobRepository extends JpaRepository<Job, Integer> {
             "(j.status LIKE %:title%)")
     List<Job> searchJob(@Param("title") String key);
 
-    int countByTitle(String title);
+    int  countByTitle(String title);
 
     @Query("SELECT j FROM Job j WHERE j.status = 'Open'")
     List<Job> findTitlesByOpen();

@@ -15,6 +15,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Integer> {
     @Query("SELECT u FROM UserEntity u WHERE u.role = 'Recruiter'")
     List<UserEntity> findRecruiter();
     Optional<UserEntity> findUserEntityByEmail(String email);
+    UserEntity findUserEntityByStatus(String status);
     @Query("SELECT u FROM UserEntity u WHERE u.role = 'Recruiter'")
     List<UserEntity> findAllRecruiters();
     @Query("SELECT u FROM UserEntity u WHERE u.role = 'Interviewer'")

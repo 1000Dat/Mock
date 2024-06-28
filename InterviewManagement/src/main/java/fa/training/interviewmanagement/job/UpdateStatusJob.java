@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 @Component
 @Log4j2
-public class UpadateEmployeeStatusJob {
+public class UpdateStatusJob {
     @Autowired
     JobService jobService;
 
@@ -22,7 +22,6 @@ public class UpadateEmployeeStatusJob {
         log.info("UpadateEmployeeStatusJob finished on: {}", LocalDateTime.now());
 
     }
-
 
     @Scheduled(cron = "0 0 0 * * *")
     public void setEndWork(){

@@ -9,7 +9,6 @@ import java.util.Set;
 
 @Entity
 @Data
-@Table(schema = "mock")
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,10 +21,7 @@ public class UserEntity {
     private String address;
     private String gender;
     private String department;
-
-
     private String status;
-
     private String note;
 
     @OneToMany(mappedBy = "userEntity",cascade = CascadeType.ALL)

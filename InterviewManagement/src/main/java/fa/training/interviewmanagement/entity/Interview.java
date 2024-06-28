@@ -11,7 +11,6 @@ import java.util.Set;
 
 @Entity
 @Data
-@Table(schema = "mock")
 public class Interview {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -20,11 +20,10 @@ public interface CandidateRepository extends JpaRepository<Candidate, Integer> {
     Page<Candidate> findByEmailContaining(String candidateEmail, Pageable pageable);
     Page<Candidate> findByPhoneContaining(String candidatePhone, Pageable pageable);
     Page<Candidate> findByOwnerHRContaining(String ownerHR, Pageable pageable);
+
     @Query("SELECT c FROM Candidate c WHERE LOWER(c.status) LIKE LOWER(CONCAT('%', :status, '%'))")
     Page<Candidate> findByStatusContaining(@Param("status") String position, Pageable pageable);
 
     @Query("SELECT c FROM Candidate c WHERE LOWER(c.currentPosition) LIKE LOWER(CONCAT('%', :position, '%'))")
     Page<Candidate> findByCurrentPositionContaining(@Param("position") String position, Pageable pageable);
-
-
 }

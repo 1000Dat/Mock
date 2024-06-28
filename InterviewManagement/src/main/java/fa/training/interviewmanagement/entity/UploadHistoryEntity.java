@@ -4,12 +4,10 @@ import fa.training.interviewmanagement.model.job.StatusUploadHistoryEnum;
 import jakarta.persistence.*;
 import lombok.Data;
 
-
 import java.time.LocalDateTime;
 
 @Entity
 @Data
-@Table(schema = "mock")
 public class UploadHistoryEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

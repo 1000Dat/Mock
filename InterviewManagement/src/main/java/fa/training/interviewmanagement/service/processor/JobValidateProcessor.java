@@ -1,6 +1,5 @@
 package fa.training.interviewmanagement.service.processor;
 
-import fa.training.interviewmanagement.entity.Job;
 import fa.training.interviewmanagement.model.job.JobDto;
 import fa.training.interviewmanagement.repository.JobRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,22 +48,14 @@ public class JobValidateProcessor {
             bindingResult.rejectValue("startWork", "error.startWork", "Thời gian lịch trình không được là ngày hôm qua hoặc quá khứ");
         }
     }
-    public boolean checkDuplicateTitle(String title,Integer id) {
-      Job jobDuplicateCount = jobRepository.findFirstByTitle(title);
-      if (jobDuplicateCount != null && jobDuplicateCount.getJobId() != id) {
-          return true;
-      }
-      return false;
-    }
-    public void validateTitle(JobDto jobDto, BindingResult bindingResult) {
-        if (checkDuplicateTitle(jobDto.getTitle() , jobDto.getJobId()) ) {
-            bindingResult.rejectValue("title", "error.title", "Tên này đã tồn tại");
-        }
-
-    }
-
     public boolean checkDuplicateTitle(String title) {
         int jobDuplicateCount = jobRepository.countByTitle(title);
         return jobDuplicateCount > 0;
+    }
+    public void validateTitle(JobDto jobDto, BindingResult bindingResult) {
+        if (checkDuplicateTitle(jobDto.getTitle())) {
+            bindingResult.rejectValue("title", "error.title", "Tên lịch trình đã đang tạo");
+        }
+
     }
 }

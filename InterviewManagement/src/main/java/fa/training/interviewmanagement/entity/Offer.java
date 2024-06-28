@@ -7,7 +7,6 @@ import java.time.LocalDate;
 
 @Entity
 @Data
-@Table(schema = "mock")
 public class Offer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

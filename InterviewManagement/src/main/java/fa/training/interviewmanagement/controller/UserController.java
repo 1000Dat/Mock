@@ -10,11 +10,15 @@ import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @Controller
@@ -33,7 +37,46 @@ public class UserController {
         return "home";
     }
 
+    @GetMapping("/user")
+    public String getUser(Principal principal) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String roleName = "";
+        if (authentication != null) {
+            for (GrantedAuthority authority : authentication.getAuthorities()) {
+                roleName = authority.getAuthority(); // Return the first role name
+            }
+        }
+        if(roleName.equalsIgnoreCase("ROLE_ADMIN")){
+            return "redirect:/userList";
+        } else {
+            return "redirect:/userForUser";
+        }
+    }
+
+    @GetMapping("/userForUser")
+    @PreAuthorize("hasAnyRole('RECRUITER', 'INTERVIEWER', 'MANAGER')")
+    public String userForUser(Model model, @RequestParam(defaultValue = "0") Integer page,
+                           @RequestParam(defaultValue = "2") Integer size,
+                           @RequestParam(value = "key", required = false) String key,
+                           @RequestParam(value = "optionSearch", required = false) String optionSearch){
+        if (key != null && !key.isEmpty()) {
+            log.info("XXX optionSearch: {}", optionSearch);
+            // Search functionality
+            List<UserEntity> list = custom.searchUser(key, optionSearch);
+            model.addAttribute("list", list);
+            model.addAttribute("searchKey", key);
+        } else {
+            UserGetResponse userGetResponse = userService.findAll(page, size);
+            model.addAttribute("list", userGetResponse.getUserResponseList());
+            model.addAttribute("currentPage", page);
+            model.addAttribute("totalPages", userGetResponse.getTotalPage());
+            model.addAttribute("totalElements", userGetResponse.getTotalElements());
+        }
+        return "userForUser";
+    }
+
     @GetMapping("/userList")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public String userList(Model model, @RequestParam(defaultValue = "0") Integer page,
                            @RequestParam(defaultValue = "2") Integer size,
                            @RequestParam(value = "key", required = false) String key,

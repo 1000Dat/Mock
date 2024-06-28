@@ -12,6 +12,7 @@ import fa.training.interviewmanagement.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,6 +27,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private MailService mailService;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Override
     public void createUser(UserDto userDto) {
         UserEntity userEntity = new UserEntity();
@@ -37,9 +41,16 @@ public class UserServiceImpl implements UserService {
         userEntity.setAddress(userDto.getAddress());
         userEntity.setGender(userDto.getGender());
         userEntity.setStatus(userDto.getStatus());
-        userEntity.setNote(userDto.getNote());
+        userEntity.setNote(passwordEncoder.encode(userDto.getNote()));
         userRepository.save(userEntity);
-        mailService.sendEmail(userDto.getEmail(), "We send password for you", "Password: " + userDto.getNote());
+        mailService.sendEmail(userDto.getEmail(), "no-reply-email-IMS-system <Account created>",
+                "This email is from IMS system\n"
+                        + "Your account has been created. Please use the following credential to login:\n"
+                        + "User name:" + userDto.getEmail()
+                        + "\nPassword:" + userDto.getNote()
+                        + "\nIf anything wrong, please reach-out recruiter < offer recruiter owner account>. We are so sorry for this inconvenience\n"
+                        + "Thanks & Regards!\n"
+                        + "IMS Team.”");
     }
 
     @Override
@@ -68,6 +79,24 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserEntity findById(Integer id) {
         return userRepository.findById(id).orElseThrow(() -> new RuntimeException("Khong tim thay"));
+    }
+
+    @Override
+    public Optional<UserEntity> findByEmail(String email) {
+        return userRepository.findUserEntityByEmail(email);
+    }
+
+    @Override
+    public UserEntity updatePass(UserDto userDto, String email) {
+        Optional<UserEntity> optionalUser = userRepository.findUserEntityByEmail(email);
+        if (optionalUser.isPresent()) {
+            mailService.sendPasswordResetEmail(email);
+            UserEntity userEntity = optionalUser.get();
+            userEntity.setNote(userDto.getNote());
+            return userRepository.save(userEntity);
+        } else {
+            throw new RuntimeException("User not found with email " + email);
+        }
     }
 
     @Override
@@ -103,10 +132,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserEntity login(LoginUser loginUser) {
         Optional<UserEntity> userOptional = userRepository.findUserEntityByEmail(loginUser.getEmail());
+        UserEntity user = userOptional.get();
         if (userOptional.isEmpty()) {
             throw new UserNotValidException("User is not valid");
         } else if (!loginUser.getNote().equals(userOptional.get().getNote())) {
             throw new PasswordMismatchException("Passwords do not match");
+        } else if (!"active".equals(user.getStatus())) {
+            throw new UserNotValidException("account is inactive");
         }
         UserEntity currentUser = new UserEntity();
         currentUser.setUsername(userOptional.get().getUsername());

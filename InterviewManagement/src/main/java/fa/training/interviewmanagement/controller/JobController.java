@@ -51,47 +51,6 @@ public class JobController {
     @Autowired
     private UserRepository userRepository;
 
-//    @GetMapping("/job")
-//    public String job(Model model, @RequestParam(defaultValue = "0") Integer page,
-//                      @RequestParam(defaultValue = "9") Integer size,
-//                      @RequestParam(value = "key", required = false) String key,
-//                      @RequestParam(value = "optionSearch", required = false) String optionSearch, HttpServletRequest request,
-//                      Principal principal) {
-//        if (key != null && !key.isEmpty()) {
-//            log.info("XXX optionSearch: {}", optionSearch);
-//            // Search functionality
-//            List<Job> list = jobCustom.searchJob(key, optionSearch);
-//            model.addAttribute("List", list);
-//            model.addAttribute("searchKey", key); // Add the search key to the model to retain the search term in the input field
-//            // TODO
-//        } else {
-//            JobGetResponse certGetResponse = jobService.findAll(page, size);
-//            model.addAttribute("List", certGetResponse.getEntityList());
-//            model.addAttribute("currentPage", page);
-//            model.addAttribute("totalPages", certGetResponse.getTotalPage());
-//            model.addAttribute("totalElements", certGetResponse.getTotalElements());
-//        }
-//
-//        UserEntity userEntity = checkLogin(principal);
-//        if (userEntity == null) {
-//            return "redirect:/login";
-//        }
-//        boolean isDisplayDownload = true;
-//        List<UploadHistoryEntity> uploadHistoryEntities = uploadHistoryRepository.findByStatusAndUserId(StatusUploadHistoryEnum.FAILURE, userEntity);
-//        if(uploadHistoryEntities.isEmpty()) {
-//             isDisplayDownload = false;
-//
-//        }
-//        model.addAttribute("isDisplayDownload", isDisplayDownload);
-//
-//
-//
-//        Boolean newFileUploaded = (Boolean) request.getSession().getAttribute("newFileUploaded");
-//        model.addAttribute("newFileUploaded", newFileUploaded != null && newFileUploaded);
-//        return "jobList";
-//    }
-
-
     @GetMapping("/job")
     public String getUser(Principal principal) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -111,10 +70,10 @@ public class JobController {
     @GetMapping("/jobList")
     @PreAuthorize("hasAnyRole('RECRUITER', 'ADMIN', 'MANAGER')")
     public String jobList(Model model, @RequestParam(defaultValue = "0") Integer page,
-                          @RequestParam(defaultValue = "9") Integer size,
-                          @RequestParam(value = "key", required = false) String key,
-                          @RequestParam(value = "optionSearch", required = false) String optionSearch, HttpServletRequest request,
-                          Principal principal) {
+                      @RequestParam(defaultValue = "9") Integer size,
+                      @RequestParam(value = "key", required = false) String key,
+                      @RequestParam(value = "optionSearch", required = false) String optionSearch, HttpServletRequest request,
+                      Principal principal) {
         if (key != null && !key.isEmpty()) {
             log.info("XXX optionSearch: {}", optionSearch);
             // Search functionality
@@ -146,14 +105,14 @@ public class JobController {
         model.addAttribute("newFileUploaded", newFileUploaded != null && newFileUploaded);
         return "jobList";
     }
+
     @GetMapping("/jobForUser")
     @PreAuthorize("hasAnyRole('INTERVIEWER')")
     public String jobForUser(Model model, @RequestParam(defaultValue = "0") Integer page,
-                             @RequestParam(defaultValue = "9") Integer size,
-                             @RequestParam(value = "key", required = false) String key,
-
-                             @RequestParam(value = "optionSearch", required = false) String optionSearch, HttpServletRequest request,
-                             Principal principal) {
+                      @RequestParam(defaultValue = "9") Integer size,
+                      @RequestParam(value = "key", required = false) String key,
+                      @RequestParam(value = "optionSearch", required = false) String optionSearch, HttpServletRequest request,
+                      Principal principal) {
         if (key != null && !key.isEmpty()) {
             log.info("XXX optionSearch: {}", optionSearch);
             // Search functionality
@@ -176,6 +135,51 @@ public class JobController {
         return "jobForUser";
     }
 
+    @GetMapping("/job-interviewer")
+    public String jobInterviewer(Model model, @RequestParam(defaultValue = "0") Integer page,
+                                 @RequestParam(defaultValue = "10") Integer size,
+                                 @RequestParam(value = "key", required = false) String key,
+                                 @RequestParam(value = "optionSearch", required = false) String optionSearch) {
+        if (key != null && !key.isEmpty()) {
+            log.info("XXX optionSearch: {}", optionSearch);
+            // Search functionality
+            List<Job> list = jobCustom.searchJob(key, optionSearch);
+            model.addAttribute("List", list);
+            model.addAttribute("searchKey", key); // Add the search key to the model to retain the search term in the input field
+        } else {
+
+            JobGetResponse certGetResponse = jobService.findAll(page, size);
+            model.addAttribute("List", certGetResponse.getEntityList());
+            model.addAttribute("currentPage", page);
+            model.addAttribute("totalPages", certGetResponse.getTotalPage());
+            model.addAttribute("totalElements", certGetResponse.getTotalElements());
+        }
+        return "job_interviewer";
+    }
+
+    @PostMapping("/create-job")
+    public String create(@ModelAttribute("jobcreate") @Valid JobDto jobDto, BindingResult result, RedirectAttributes redirectAttributes, Model model) {
+        validateProcessor.validateTitle(jobDto,result);
+        validateProcessor.validateScheduleTime(jobDto, result);
+        if (validateProcessor.isValidate(result, jobDto).hasErrors()) {
+
+            // Đưa jobDto vào model để hiển thị trên view
+            model.addAttribute("jobcreate", jobDto);
+
+            // Thêm các attribute cho view
+            model.addAttribute("skill", jobDto.getSkill());
+            model.addAttribute("benefits", jobDto.getBenefits());
+            model.addAttribute("levels", jobDto.getLevel());
+
+
+            return "jobCreate";  // Thay thế bằng tên trang biểu mẫu thực tế
+        }
+        jobService.createJob(jobDto);
+//        redirectAttributes.addFlashAttribute("message", "Thêm thành công: ");
+        redirectAttributes.addFlashAttribute("message", "Thêm thành công: " + jobDto.getTitle());
+        return "redirect:/job";
+
+    }
 
     @GetMapping("/add-job")
     public String jobAdd(Model model, JobDto jobDto) {
@@ -208,7 +212,6 @@ public class JobController {
             model.addAttribute("job", job);
             return "jobDetail";
         } catch (RuntimeException e) {
-
             return "jobNotFound"; // For example, return a separate error page
         }
 
@@ -284,7 +287,7 @@ public class JobController {
 
     @PostMapping("/files/upload")
     public String uploadFile(Model model, @RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes, Principal principal) throws IOException {
-       UserEntity userEntity = checkLogin(principal);
+        UserEntity userEntity = checkLogin(principal);
         if (userEntity == null) {
             return "redirect:/login";
         }
