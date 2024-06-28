@@ -1,11 +1,12 @@
 spring:
   datasource:
-    url: jdbc:sqlserver://localhost;databaseName=IMS;encrypt = false
-    username: SA
-    password: 12345678@Abcxyz@
+    url: jdbc:sqlserver://localhost;databaseName=master;encrypt = false
+    username: sa
+    password: Fsoft123!
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
   jpa:
     database-platform: org.hibernate.dialect.SQLServerDialect
+    show-sql: true
     hibernate:
       ddl-auto: update
   springdoc:
