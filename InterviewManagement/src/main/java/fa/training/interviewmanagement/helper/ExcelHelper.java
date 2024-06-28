@@ -83,6 +83,7 @@ public class ExcelHelper {
                             case 1:
                                 if (currentCell == null || currentCell.getStringCellValue().isEmpty()) {
                                     errorMessageBuilder.append("Title không được để trống. ");
+                                    throw new RuntimeException();
                                 } else if (jobValidateProcessor.checkDuplicateTitle(currentCell.getStringCellValue())) {
                                     errorMessageBuilder.append("Trùng Title. ");
                                     throw new RuntimeException();

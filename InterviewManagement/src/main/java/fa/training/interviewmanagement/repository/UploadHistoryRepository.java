@@ -12,6 +12,6 @@ import java.util.List;
 @Repository
 public interface UploadHistoryRepository extends JpaRepository<UploadHistoryEntity, Integer> {
 
-    @Query(value = "select t from UploadHistoryEntity t where t.statusUploadHistoryEnum = :status and t.uploadBy = :id order by t.uploadDate desc")
-    List<UploadHistoryEntity> findByStatusAndUserId(StatusUploadHistoryEnum status, UserEntity id);
+    @Query(value = "select  t from UploadHistoryEntity t where t.uploadBy =:userId order by  t.uploadDate desc")
+    List<UploadHistoryEntity> findByStatusAndUserId(UserEntity userId);
 }

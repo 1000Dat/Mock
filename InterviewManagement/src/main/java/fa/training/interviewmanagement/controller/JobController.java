@@ -32,6 +32,7 @@ import java.io.*;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Controller
@@ -93,11 +94,17 @@ public class JobController {
         if (userEntity == null) {
             return "redirect:/login";
         }
-        boolean isDisplayDownload = true;
-        List<UploadHistoryEntity> uploadHistoryEntities = uploadHistoryRepository.findByStatusAndUserId(StatusUploadHistoryEnum.FAILURE, userEntity);
-        if(uploadHistoryEntities.isEmpty()) {
-            isDisplayDownload = false;
+        boolean isDisplayDownload = false;
+        List<UploadHistoryEntity> uploadHistoryEntities = uploadHistoryRepository.findByStatusAndUserId(userEntity);
+        if(!uploadHistoryEntities.isEmpty() ) {
+           UploadHistoryEntity uploadHistoryEntity  = uploadHistoryEntities.get(0);
+           if(uploadHistoryEntity.getStatusUploadHistoryEnum() == StatusUploadHistoryEnum.SUCCESS){
+              isDisplayDownload = true;
+           }
 
+
+        } else {
+            isDisplayDownload = true;
         }
         model.addAttribute("isDisplayDownload", isDisplayDownload);
 
@@ -158,7 +165,12 @@ public class JobController {
     }
 
     @PostMapping("/create-job")
-    public String create(@ModelAttribute("jobcreate") @Valid JobDto jobDto, BindingResult result, RedirectAttributes redirectAttributes, Model model) {
+    public String create(@ModelAttribute("jobcreate") @Valid JobDto jobDto, BindingResult result, RedirectAttributes redirectAttributes, Model model,Principal principal) {
+        UserEntity userEntity = checkLogin(principal);
+        if (userEntity == null) {
+            return "redirect:/login";
+        }
+
         validateProcessor.validateTitle(jobDto,result);
         validateProcessor.validateScheduleTime(jobDto, result);
         if (validateProcessor.isValidate(result, jobDto).hasErrors()) {
@@ -174,7 +186,7 @@ public class JobController {
 
             return "jobCreate";  // Thay thế bằng tên trang biểu mẫu thực tế
         }
-        jobService.createJob(jobDto);
+        jobService.createJob(jobDto,userEntity);
 //        redirectAttributes.addFlashAttribute("message", "Thêm thành công: ");
         redirectAttributes.addFlashAttribute("message", "Thêm thành công: " + jobDto.getTitle());
         return "redirect:/job";
@@ -264,7 +276,14 @@ public class JobController {
     }
 
     @PostMapping("/update-job")
-    public String saveJob(@ModelAttribute("jobDto") @Valid JobDto jobDto, BindingResult result, RedirectAttributes redirectAttributes, Model model) {
+    public String saveJob(@ModelAttribute("jobDto") @Valid JobDto jobDto, BindingResult result, RedirectAttributes redirectAttributes, Model model,Principal principal) {
+        UserEntity userEntity = checkLogin(principal);
+        Job job = jobService.findById(jobDto.getJobId());
+        if (!Objects.equals(job.getCreateBy(), userEntity.getUserId())) {
+            // Cut toi trang 404
+        }
+
+
         validateProcessor.validateTitle(jobDto,result);
         validateProcessor.validateScheduleTime(jobDto, result);
         if (validateProcessor.isValidate(result, jobDto).hasErrors()) {

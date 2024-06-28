@@ -1,6 +1,7 @@
 package fa.training.interviewmanagement.service.impl;
 
 import fa.training.interviewmanagement.entity.Job;
+import fa.training.interviewmanagement.entity.UserEntity;
 import fa.training.interviewmanagement.model.job.JobDto;
 import fa.training.interviewmanagement.model.job.JobGetResponse;
 import fa.training.interviewmanagement.model.job.StatusJobEnum;
@@ -21,7 +22,7 @@ public class JobServiceImpl implements JobService {
     @Autowired
     private JobRepository jobRepository;
 
-    public void createJob(JobDto jobDto){
+    public void createJob(JobDto jobDto, UserEntity userEntity){
         Job job = new Job();
         job.setTitle(jobDto.getTitle());
         job.setStartWork(jobDto.getStartWork());
@@ -34,6 +35,7 @@ public class JobServiceImpl implements JobService {
         job.setLevel(String.join(",", jobDto.getLevel()));
         job.setDescription(jobDto.getDescription());
         job.setStatus(StatusJobEnum.DRAFT);
+        job.setCreateBy(userEntity.getUserId());
         jobRepository.save(job);
     }
 
@@ -93,7 +95,7 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
-    public void changeStatusEndWork() {
+    public void  changeStatusEndWork() {
         List<Job> jobList = jobRepository.findByEndWork(LocalDate.now());
         for (Job job : jobList) {
             job.setStatus(StatusJobEnum.CLOSED);

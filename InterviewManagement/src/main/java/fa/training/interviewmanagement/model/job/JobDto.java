@@ -3,6 +3,7 @@ package fa.training.interviewmanagement.model.job;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import org.hibernate.validator.constraints.Length;
 
 
 import java.time.LocalDate;
@@ -13,14 +14,17 @@ public class JobDto {
     private Integer jobId;
 
     @NotBlank
-    @NotBlank(message = "Bạn chưa nhập")
+    @NotBlank(message = "Bạn chưa nhập" )
+    @Length(min = 1, max = 100)
     private String title;
     @NotNull(message = "Bạn chưa nhập")
     private LocalDate startWork;
     @NotNull(message = "Bạn chưa nhập")
     private LocalDate endWork;
+    @Length(min = 1, max = 100)
     @NotNull(message = "Bạn chưa nhập")
     private String address;
+    @Length(min = 1, max = 100)
     @NotNull(message = "Bạn chưa nhập")
     private String description;
     @NotNull(message = "Bạn chưa nhập")

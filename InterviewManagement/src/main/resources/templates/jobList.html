@@ -64,37 +64,59 @@
             </div>
         </div>
         <div class="button-container">
-            <button><a th:href="@{/add-job}">Add New</a></button>
+
+
+            <div th:if="${isDisplayDownload == false}" >
+                <a href="/files/download" style="text-decoration: none; width: fit-content; margin-left: 20px">
+                    <button  style="
+                        display: inline-block;
+                        background-color: #007BFF; /* Green background */
+                        color: white; /* White text */
+                        padding: 10px 20px; /* Padding */
+                        text-align: center; /* Centered text */
+                        text-decoration: none; /* Remove underline */
+                        font-size: 16px; /* Font size */
+                        border-radius: 5px; /* Rounded corners */
+                        transition: background-color 0.3s ease; /* Smooth transition */
+                        cursor: pointer; /* Pointer/hand icon on hover */
+                        border: none; /* Remove borders */
+                    " onmouseover="this.style.backgroundColor='#45a049'" onmouseout="this.style.backgroundColor='#4CAF50'">
+                        Download file
+                    </button>
+                </a>
+            </div>
+
+            <a th:href="@{/add-job}" style="
+                        display: inline-block;
+                        background-color: #007BFF; /* Green background */
+                        color: white; /* White text */
+                        padding: 10px 20px; /* Padding */
+                        text-align: center; /* Centered text */
+                        text-decoration: none; /* Remove underline */
+                        font-size: 16px; /* Font size */
+                        border-radius: 5px; /* Rounded corners */
+                        transition: background-color 0.3s ease; /* Smooth transition */
+                        cursor: pointer; /* Pointer/hand icon on hover */
+                        border: none; /* Remove borders */
+                    " onmouseover="this.style.backgroundColor='#45a049'" onmouseout="this.style.backgroundColor='#4CAF50'">
+                Add New
+            </a>
             <form
                     id="uploadForm"
                     method="post"
                     th:action="@{/files/upload}"
                     enctype="multipart/form-data">
                 <input id="input-file" type="file" name="file" accept=".xls,.xlsx" style="display: none;"/>
-                <button type="button" class="btn btn-sm btn-outline-success" onclick="openFileDialogAndSubmit()">Add Excel</button>
+                <button type="button" class="btn btn-sm btn-outline-success" onclick="openFileDialogAndSubmit()">Add
+                    Excel
+                </button>
             </form>
+
+
+
+
         </div>
 
-        <!-- Trong file job.html -->
-        <!-- Sử dụng Thymeleaf để kiểm tra biến newFileUploaded và điều khiển hiển thị của nút "Tải xuống file" -->
-        <!--        th:if="${newFileUploaded}"-->
-        <a  href="/files/download" style="text-decoration: none; width: fit-content; margin-left: 20px">
-            <button style="
-        background-color: #4CAF50; /* Green background */
-        border: none; /* Remove borders */
-        color: white; /* White text */
-        padding: 20px 32px; /* Some padding */
-        text-align: center; /* Centered text */
-        text-decoration: none; /* Remove underline */
-        display: inline-block; /* Get the element to line up in a row */
-        font-size: 16px; /* Increase font size */
-        cursor: pointer; /* Pointer/hand icon on hover */
-        border-radius: 5px; /* Rounded corners */
-        transition: background-color 0.3s ease; /* Smooth transition */
-    " onmouseover="this.style.backgroundColor='#45a049'" onmouseout="this.style.backgroundColor='#4CAF50'">
-                Tải xuống file
-            </button>
-        </a>
 
         <div class="table-list">
             <table>

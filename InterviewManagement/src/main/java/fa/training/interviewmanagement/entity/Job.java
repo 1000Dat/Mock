@@ -27,6 +27,9 @@ public class Job {
     private String benefits;
     String level;
 
+
+    private Integer createBy;
+
     @Enumerated(EnumType.STRING)
     private StatusJobEnum status;
 
