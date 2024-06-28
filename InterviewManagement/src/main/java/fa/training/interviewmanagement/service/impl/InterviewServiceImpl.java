@@ -5,6 +5,7 @@ import fa.training.interviewmanagement.entity.Interview;
 import fa.training.interviewmanagement.entity.Job;
 import fa.training.interviewmanagement.entity.UserEntity;
 import fa.training.interviewmanagement.model.candidate.CandidateEnum;
+import fa.training.interviewmanagement.model.interview.InterviewCandidate;
 import fa.training.interviewmanagement.model.interview.InterviewDto;
 import fa.training.interviewmanagement.model.interview.InterviewGetResponse;
 import fa.training.interviewmanagement.repository.CandidateRepository;
@@ -20,10 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,38 +40,46 @@ public class InterviewServiceImpl implements InterviewService {
 
     @Transactional
     public void createInterview(InterviewDto dto) {
-        Candidate candidate = candidateRepository.findFirstByName(dto.getCandidateName());
+
+        Optional<Candidate> candidate = candidateRepository.findById(dto.getCandidates().get(0).getId());
         Job job = jobRepository.findFirstByTitle(dto.getJob());
         UserEntity recruiter = userRepository.findByUsername(dto.getRecruiterOwner());
-        List<UserEntity> interviewers = new ArrayList<>();
-        if (dto.getInterview() != null) {
+        List<UserEntity> interviewerInterviews = new ArrayList<>();
+        if (dto.getInterview() != null && !dto.getInterview().trim().isEmpty()) {
+            // Tách chuỗi tên người dùng thành danh sách
             List<String> interviewerUsernames = Arrays.asList(dto.getInterview().split(","));
             for (String username : interviewerUsernames) {
-                UserEntity user = userRepository.findByUsername(username);
+                // Tìm kiếm người dùng theo tên người dùng
+                UserEntity user = userRepository.findByUsername(username.trim());
                 if (user != null) {
-                    interviewers.add(user);
+                    // Thêm người dùng vào danh sách người phỏng vấn
+                    interviewerInterviews.add(user);
                 }
             }
         }
 
+        // Tạo đối tượng Interview và thiết lập các thuộc tính
         Interview interview = new Interview();
         interview.setScheduleTitle(dto.getScheduleTitle());
         interview.setScheduleTime(dto.getScheduleTime());
-        interview.setCandidate(candidate);
+        interview.setCandidate(candidate.get());
         interview.setScheduleFrom(dto.getScheduleFrom());
         interview.setScheduleTo(dto.getScheduleTo());
         interview.setJob(job);
-        interview.setInterviewers(interviewers);
+        interview.setInterviewers(interviewerInterviews);
         interview.setLocation(dto.getLocation());
         interview.setRecruiter(recruiter);
         interview.setMeetingId(dto.getMeetingID());
         interview.setStatus("New");
         interview.setResult("N/A");
-        interviewRepository.save(interview);
-        candidate.setStatus(CandidateEnum.CandidateStatus.WaitingForInterview);
-        candidateRepository.save(candidate);
-    }
 
+        // Lưu đối tượng Interview vào cơ sở dữ liệu
+        interviewRepository.save(interview);
+
+        // Cập nhật trạng thái của ứng viên và lưu lại
+        candidate.get().setStatus(CandidateEnum.CandidateStatus.WaitingForInterview);
+        candidateRepository.save(candidate.get());
+    }
 
 
     @Override
@@ -209,7 +215,7 @@ public class InterviewServiceImpl implements InterviewService {
             Interview interview = interviewOptional.get();
 
 
-            Candidate candidate = candidateRepository.findFirstByName(request.getCandidateName());
+            Optional<Candidate> candidate = candidateRepository.findById(request.getCandidates().get(0).getId());
             Job job = jobRepository.findFirstByTitle(request.getJob());
             UserEntity recruiter = userRepository.findByUsername(request.getRecruiterOwner());
 
@@ -226,7 +232,7 @@ public class InterviewServiceImpl implements InterviewService {
             }
             interview.setScheduleTitle(request.getScheduleTitle());
             interview.setScheduleTime(request.getScheduleTime());
-            interview.setCandidate(candidate);
+            interview.setCandidate(candidate.get());
             interview.setScheduleFrom(request.getScheduleFrom());
             interview.setScheduleTo(request.getScheduleTo());
             interview.setJob(job);
@@ -254,7 +260,13 @@ public class InterviewServiceImpl implements InterviewService {
 
         InterviewDto interviewPostDto = new InterviewDto();
         interviewPostDto.setInterviewId(interview.getInterviewId()); // Set the ID
-        interviewPostDto.setCandidateName(interview.getCandidate().getName());
+
+        InterviewCandidate candidateDto = new InterviewCandidate(
+                interview.getCandidate().getCandId(),
+                interview.getCandidate().getName(),
+                interview.getCandidate().getEmail()
+        );
+        interviewPostDto.setCandidates(Collections.singletonList(candidateDto));
         interviewPostDto.setJob(interview.getJob().getTitle());
 
         List<String> interviewerNames = interview.getInterviewers()

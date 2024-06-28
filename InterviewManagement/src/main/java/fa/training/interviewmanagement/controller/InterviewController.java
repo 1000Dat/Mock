@@ -3,6 +3,7 @@ package fa.training.interviewmanagement.controller;
 import fa.training.interviewmanagement.entity.Candidate;
 import fa.training.interviewmanagement.entity.Job;
 import fa.training.interviewmanagement.entity.UserEntity;
+import fa.training.interviewmanagement.model.interview.InterviewCandidate;
 import fa.training.interviewmanagement.model.interview.InterviewDto;
 import fa.training.interviewmanagement.model.interview.InterviewGetResponse;
 import fa.training.interviewmanagement.service.InterviewService;
@@ -14,6 +15,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/interview")
@@ -25,7 +27,8 @@ public class InterviewController {
 
     @GetMapping("/showCreate")
     public String showAddInterview(Model model) {
-        model.addAttribute("interviewPostDto", new InterviewDto());
+        InterviewDto interviewPostDto = new InterviewDto();
+        model.addAttribute("interviewPostDto",  interviewPostDto);
         List<Job> jobList = interviewService.getAllJob();
         model.addAttribute("jobsList", jobList);
         List<Candidate> candidateList = interviewService.getAllCandidate();
@@ -34,20 +37,32 @@ public class InterviewController {
         model.addAttribute("userList", userList);
         List<UserEntity> userInterviewerList = interviewService.getAllUserInterviewer();
         model.addAttribute("userInterviewerList", userInterviewerList);
+
+        List<InterviewCandidate> interviewCandidates = candidateList.stream()
+                .map(c -> new InterviewCandidate(c.getCandId(), c.getName(),c.getEmail()))
+                .collect(Collectors.toList());
+
+        interviewPostDto.setCandidates(interviewCandidates);
+
         return "interviewCreate";
     }
 
     @PostMapping("/createInterview")
     public String createInterview(@ModelAttribute("interviewPostDto") InterviewDto interviewPostDto, BindingResult bindingResult, Model model){
         interviewValidator.validate(interviewPostDto, bindingResult);
-        if(bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) {
             List<Job> jobList = interviewService.getAllJob();
-            model.addAttribute("jobsList", jobList);
             List<Candidate> candidateList = interviewService.getAllCandidate();
-            model.addAttribute("candidateList", candidateList);
+            List<InterviewCandidate> interviewCandidates = candidateList.stream()
+                    .map(c -> new InterviewCandidate(c.getCandId(), c.getName(),c.getEmail()))
+                    .collect(Collectors.toList());
+            interviewPostDto.setCandidates(interviewCandidates);
             List<UserEntity> userList = interviewService.getAllUser();
-            model.addAttribute("userList", userList);
             List<UserEntity> userInterviewerList = interviewService.getAllUserInterviewer();
+
+            model.addAttribute("jobsList", jobList);
+            model.addAttribute("candidateList", candidateList);
+            model.addAttribute("userList", userList);
             model.addAttribute("userInterviewerList", userInterviewerList);
             return "interviewCreate";
         }
@@ -111,7 +126,6 @@ public class InterviewController {
         InterviewDto interviewPostDto1 = new InterviewDto();
         interviewPostDto1.setInterviewId(interviewPostDto.getInterviewId());
         interviewPostDto1.setScheduleTitle(interviewPostDto.getScheduleTitle());
-        interviewPostDto1.setCandidateName(interviewPostDto.getCandidateName());
         interviewPostDto1.setScheduleTime(interviewPostDto.getScheduleTime());
         interviewPostDto1.setScheduleFrom(interviewPostDto.getScheduleFrom());
         interviewPostDto1.setScheduleTo(interviewPostDto.getScheduleTo());
@@ -121,9 +135,9 @@ public class InterviewController {
         interviewPostDto1.setRecruiterOwner(interviewPostDto.getRecruiterOwner());
         interviewPostDto1.setMeetingID(interviewPostDto.getMeetingID());
         interviewPostDto1.setNotes(interviewPostDto.getNotes());
-        interviewPostDto1.setStatus(interviewPostDto.getStatus());
         interviewPostDto1.setResult(interviewPostDto.getResult());
         interviewService.EditInterview(interviewPostDto1, interviewPostDto.getInterviewId());
+
         return "redirect:/interview";
     }
     @PostMapping("/cancelSchedule")

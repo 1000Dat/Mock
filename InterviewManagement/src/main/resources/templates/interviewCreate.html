@@ -65,11 +65,14 @@
                 </div>
                 <div class="form-section form-section-half">
                     <label for="candidate">Candidate name <span class="required">*</span></label>
-                    <select id="candidate" name="candidateName" th:field="*{candidateName}">
-                        <option value="" disabled selected>Select a candidate...</option>
-                        <option th:each="candidateName : ${candidateList}" th:value="${candidateName.name}" th:text="${candidateName.name}"></option>
+                    <select id="candidate" th:field="*{candidates[0].id}">
+                        <option value="" disabled selected>Select a Candidate name...</option>
+                        <option th:each="candidate : ${interviewPostDto.candidates}"
+                                th:value="${candidate.id}"
+                                th:text="${candidate.candidateName + ' - ' + candidate.email}">
+                        </option>
                     </select>
-                    <div th:if="${#fields.hasErrors('candidateName')}" th:errors="*{candidateName}" class="error"></div>
+                    <div th:if="${#fields.hasErrors('candidates')}" th:errors="*{candidates}" class="error"></div>
                 </div>
                 <div class="form-section form-section-half">
                     <label for="schedule-time">Schedule Time <span class="required">*</span></label>

@@ -26,9 +26,9 @@ public class InterviewValidateProcessor implements Validator {
         }
 
         // Validate candidateName
-        if (interviewDto.getCandidateName() == null || interviewDto.getCandidateName().isEmpty()) {
-            errors.rejectValue("candidateName", "error.candidateName.notBlank",
-                    ValidationMessages.CANDIDATE_NAME_NOT_BLANK);
+        if (interviewDto.getCandidates() == null || interviewDto.getCandidates().isEmpty()) {
+            errors.rejectValue("candidates", "error.candidates.notBlank",
+                    ValidationMessages.CANDIDATE_LIST_NOT_BLANK);
         }
 
         // Validate scheduleTime

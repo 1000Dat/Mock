@@ -64,13 +64,11 @@
                    <div th:if="${#fields.hasErrors('scheduleTitle')}" th:errors="*{scheduleTitle}" class="error"></div>
             </div>
                 <div class="form-section form-section-half">
-                    <label for="candidate">Candidate name <span class="required"></span></label>
-                    <select id="candidate" name="candidateName" >
-                        <option th:each="candidate : ${candidateList}"
-                                th:text="${candidate.name}">
-                        </option>
-                    </select>
-                    <div th:if="${#fields.hasErrors('candidateName')}" th:errors="*{candidateName}" class="error"></div>
+
+                    <label>Candidate name <span class="required"></span></label>
+                    <div th:each="candidate : *{candidates}">
+                        <input type="text" readonly="readonly" th:value="${candidate.candidateName}" class="candidate-field">
+                    </div>
                 </div>
                 <div class="form-section form-section-half">
                     <label for="schedule-time">Schedule Time <span class="required">*</span></label>
@@ -110,8 +108,10 @@
                                     th:field="*{interview}"
                                     th:value="${interviewer.username}"
                                     th:text="${interviewer.username}">
+
                             </option>
                         </select>
+
                     </div>
                     <div th:if="${#fields.hasErrors('interview')}" th:errors="*{interview}" class="error"></div>
                 </div>
@@ -156,14 +156,6 @@
                     </select>
                 </div>
 
-                <div class="form-section form-section-half">
-                    <label for="result">Result <span class="required">*</span></label>
-                    <select id="result" name="result"  >
-                        <option value="" disabled selected>Select a result...</option>
-                        <option value="Passed">Passed</option>
-                        <option value="Failed">Failed</option>
-                    </select>
-                </div>
 
                 <div class="form-actions">
                     <button type="submit">Submit</button>

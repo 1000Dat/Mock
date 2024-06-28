@@ -4,12 +4,13 @@ import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 @Data
 public class InterviewDto {
     private Integer interviewId;
     private String scheduleTitle;
-    private String candidateName;
+    private List<InterviewCandidate> candidates;
     private LocalDate scheduleTime;
     private LocalTime scheduleFrom;
     private LocalTime scheduleTo;
