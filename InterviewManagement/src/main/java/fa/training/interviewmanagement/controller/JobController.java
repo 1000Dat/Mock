@@ -280,7 +280,7 @@ public class JobController {
         UserEntity userEntity = checkLogin(principal);
         Job job = jobService.findById(jobDto.getJobId());
         if (!Objects.equals(job.getCreateBy(), userEntity.getUserId())) {
-            // Cut toi trang 404
+            throw new RuntimeException("Bạn không có quyền thay đổi");
         }
 
 

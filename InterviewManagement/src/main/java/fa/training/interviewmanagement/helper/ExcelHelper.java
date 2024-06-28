@@ -73,6 +73,7 @@ public class ExcelHelper {
                 Iterator<Cell> cellsInRow = currentRow.iterator();
 
                 Job job = new Job();
+                job.setCreateBy(userEntity.getUserId());
                 job.setStatus(StatusJobEnum.DRAFT);
                 int cellIdx = 0;
                 errorMessageBuilder.append("Row " + rowNumber + ": ");
