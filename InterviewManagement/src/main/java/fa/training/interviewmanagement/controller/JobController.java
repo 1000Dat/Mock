@@ -17,6 +17,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -47,12 +51,70 @@ public class JobController {
     @Autowired
     private UserRepository userRepository;
 
+//    @GetMapping("/job")
+//    public String job(Model model, @RequestParam(defaultValue = "0") Integer page,
+//                      @RequestParam(defaultValue = "9") Integer size,
+//                      @RequestParam(value = "key", required = false) String key,
+//                      @RequestParam(value = "optionSearch", required = false) String optionSearch, HttpServletRequest request,
+//                      Principal principal) {
+//        if (key != null && !key.isEmpty()) {
+//            log.info("XXX optionSearch: {}", optionSearch);
+//            // Search functionality
+//            List<Job> list = jobCustom.searchJob(key, optionSearch);
+//            model.addAttribute("List", list);
+//            model.addAttribute("searchKey", key); // Add the search key to the model to retain the search term in the input field
+//            // TODO
+//        } else {
+//            JobGetResponse certGetResponse = jobService.findAll(page, size);
+//            model.addAttribute("List", certGetResponse.getEntityList());
+//            model.addAttribute("currentPage", page);
+//            model.addAttribute("totalPages", certGetResponse.getTotalPage());
+//            model.addAttribute("totalElements", certGetResponse.getTotalElements());
+//        }
+//
+//        UserEntity userEntity = checkLogin(principal);
+//        if (userEntity == null) {
+//            return "redirect:/login";
+//        }
+//        boolean isDisplayDownload = true;
+//        List<UploadHistoryEntity> uploadHistoryEntities = uploadHistoryRepository.findByStatusAndUserId(StatusUploadHistoryEnum.FAILURE, userEntity);
+//        if(uploadHistoryEntities.isEmpty()) {
+//             isDisplayDownload = false;
+//
+//        }
+//        model.addAttribute("isDisplayDownload", isDisplayDownload);
+//
+//
+//
+//        Boolean newFileUploaded = (Boolean) request.getSession().getAttribute("newFileUploaded");
+//        model.addAttribute("newFileUploaded", newFileUploaded != null && newFileUploaded);
+//        return "jobList";
+//    }
+
+
     @GetMapping("/job")
-    public String job(Model model, @RequestParam(defaultValue = "0") Integer page,
-                      @RequestParam(defaultValue = "9") Integer size,
-                      @RequestParam(value = "key", required = false) String key,
-                      @RequestParam(value = "optionSearch", required = false) String optionSearch, HttpServletRequest request,
-                      Principal principal) {
+    public String getUser(Principal principal) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String roleName = "";
+        if (authentication != null) {
+            for (GrantedAuthority authority : authentication.getAuthorities()) {
+                roleName = authority.getAuthority(); // Return the first role name
+            }
+        }
+        if(roleName.equalsIgnoreCase("ROLE_ADMIN")){
+            return "redirect:/jobList";
+        } else {
+            return "redirect:/jobForUser";
+        }
+    }
+
+    @GetMapping("/jobList")
+    @PreAuthorize("hasAnyRole('RECRUITER', 'ADMIN', 'MANAGER')")
+    public String jobList(Model model, @RequestParam(defaultValue = "0") Integer page,
+                          @RequestParam(defaultValue = "9") Integer size,
+                          @RequestParam(value = "key", required = false) String key,
+                          @RequestParam(value = "optionSearch", required = false) String optionSearch, HttpServletRequest request,
+                          Principal principal) {
         if (key != null && !key.isEmpty()) {
             log.info("XXX optionSearch: {}", optionSearch);
             // Search functionality
@@ -75,31 +137,31 @@ public class JobController {
         boolean isDisplayDownload = true;
         List<UploadHistoryEntity> uploadHistoryEntities = uploadHistoryRepository.findByStatusAndUserId(StatusUploadHistoryEnum.FAILURE, userEntity);
         if(uploadHistoryEntities.isEmpty()) {
-             isDisplayDownload = false;
+            isDisplayDownload = false;
 
         }
         model.addAttribute("isDisplayDownload", isDisplayDownload);
-
-
 
         Boolean newFileUploaded = (Boolean) request.getSession().getAttribute("newFileUploaded");
         model.addAttribute("newFileUploaded", newFileUploaded != null && newFileUploaded);
         return "jobList";
     }
+    @GetMapping("/jobForUser")
+    @PreAuthorize("hasAnyRole('INTERVIEWER')")
+    public String jobForUser(Model model, @RequestParam(defaultValue = "0") Integer page,
+                             @RequestParam(defaultValue = "9") Integer size,
+                             @RequestParam(value = "key", required = false) String key,
 
-    @GetMapping("/job-interviewer")
-    public String jobInterviewer(Model model, @RequestParam(defaultValue = "0") Integer page,
-                                 @RequestParam(defaultValue = "10") Integer size,
-                                 @RequestParam(value = "key", required = false) String key,
-                                 @RequestParam(value = "optionSearch", required = false) String optionSearch) {
+                             @RequestParam(value = "optionSearch", required = false) String optionSearch, HttpServletRequest request,
+                             Principal principal) {
         if (key != null && !key.isEmpty()) {
             log.info("XXX optionSearch: {}", optionSearch);
             // Search functionality
             List<Job> list = jobCustom.searchJob(key, optionSearch);
             model.addAttribute("List", list);
             model.addAttribute("searchKey", key); // Add the search key to the model to retain the search term in the input field
+            // TODO
         } else {
-
             JobGetResponse certGetResponse = jobService.findAll(page, size);
             model.addAttribute("List", certGetResponse.getEntityList());
             model.addAttribute("currentPage", page);
@@ -107,32 +169,13 @@ public class JobController {
             model.addAttribute("totalElements", certGetResponse.getTotalElements());
         }
 
-        return "job_interviewer";
-    }
-
-    @PostMapping("/create-job")
-    public String create(@ModelAttribute("jobcreate") @Valid JobDto jobDto, BindingResult result, RedirectAttributes redirectAttributes, Model model) {
-        validateProcessor.validateTitle(jobDto,result);
-        validateProcessor.validateScheduleTime(jobDto, result);
-        if (validateProcessor.isValidate(result, jobDto).hasErrors()) {
-
-            // Đưa jobDto vào model để hiển thị trên view
-            model.addAttribute("jobcreate", jobDto);
-
-            // Thêm các attribute cho view
-            model.addAttribute("skill", jobDto.getSkill());
-            model.addAttribute("benefits", jobDto.getBenefits());
-            model.addAttribute("levels", jobDto.getLevel());
-
-
-            return "jobCreate";  // Thay thế bằng tên trang biểu mẫu thực tế
+        UserEntity userEntity = checkLogin(principal);
+        if (userEntity == null) {
+            return "redirect:/login";
         }
-        jobService.createJob(jobDto);
-//        redirectAttributes.addFlashAttribute("message", "Thêm thành công: ");
-        redirectAttributes.addFlashAttribute("message", "Thêm thành công: " + jobDto.getTitle());
-        return "redirect:/job";
-
+        return "jobForUser";
     }
+
 
     @GetMapping("/add-job")
     public String jobAdd(Model model, JobDto jobDto) {
