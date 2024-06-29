@@ -53,58 +53,53 @@
 
         <div class="from-container">
             <hr>
-            <form class="schedule-form" th:action="@{/interviewer/submitEdit}" th:object="${submit}" method="post">
+            <form class="schedule-form" th:action="@{/interview/interviewer/submitEdit}" th:object="${submit}" method="post">
 
                 <div class="form-section form-section-half">
                     <input type="hidden" th:field="*{id}" />
                     <label for="title">Schedule title</label>
-                    <input  id="title" name="title" th:text="${submit.scheduleTitle}" th:field="*{scheduleTitle}">
+                    <input  id="title" name="title" readonly  th:field="*{scheduleTitle}">
                 </div>
                 <div class="form-section form-section-half">
                     <label for="candidate">Candidate name <span class="required"></span></label>
-                    <select id="candidate" name="candidateName" >
-                        <option th:text="${submit.candidateName}">
-                        </option>
-                    </select>
+                    <input  id="candidate" name="job" readonly  th:field="*{candidateName}">
+
                 </div>
                 <div class="form-section form-section-half">
                     <label for="schedule-time">Schedule Time</label>
-                    <input  id="schedule-time" name="scheduleTime" th:text="${submit.scheduleTime}" th:field="*{scheduleTime}">
+                    <input  id="schedule-time" name="scheduleTime" th:field="*{scheduleTime}">
                     <div class="time-input">
                         <label for="schedule-from">From :</label>
-                        <input  id="schedule-from" name="scheduleFrom" th:text="${submit.scheduleFrom}" th:field="*{scheduleFrom}">
+                        <input  id="schedule-from" name="scheduleFrom" th:field="*{scheduleFrom}">
                     </div>
 
                     <div class="time-input">
                         <label for="schedule-to">To :</label>
-                        <input id="schedule-to" name="scheduleTo" th:text="${submit.scheduleTo}" th:field="*{scheduleTo}">
+                        <input id="schedule-to" name="scheduleTo" th:field="*{scheduleTo}">
                     </div>
                 </div>
 
                 <div class="form-section form-section-half">
                     <label for="job">Job <span class="required">*</span></label>
-                    <select id="job" name="job" >
-                        <option th:text="${submit.job}"></option>
-                    </select>
+                    <input  id="job" name="job" readonly  th:field="*{job}">
+
                 </div>
 
                 <div class="form-section form-section-half">
                     <label for="interviewer">Interviewer : </label>
-                    <select id="interviewer" name="interview" >
-                        <option th:text="${submit.interview}"> </option>
-                    </select>
+                    <input  id="interviewer" name="interview" readonly th:field="*{interview}">
+
                 </div>
 
                 <div class="form-section form-section-half">
                     <label for="location">Location :</label>
-                    <input  id="location" name="location" th:text="${submit.location}">
+                    <input  id="location" name="location" readonly  th:field="*{location}">
                 </div>
 
                 <div class="form-section form-section-half">
                     <label for="recruiter">Recruiter owner : </label>
-                    <select id="recruiter" name="recruiterOwner" >
-                        <option th:text="${submit.recruiterOwner}"> </option>
-                    </select>
+                    <input  id="recruiter" name="recruiterOwner" readonly  th:field="*{recruiterOwner}">
+
                 </div>
 
                 <div class="form-section">
@@ -113,15 +108,12 @@
                 </div>
                 <div class="form-section">
                     <label for="meeting-id">Meeting ID : </label>
-                    <input  id="meeting-id" name="meeting-id" th:text="${submit.meetingID}" th:field="*{meetingID}">
+                    <input  id="meeting-id" name="meeting-id" readonly th:field="*{meetingID}">
                 </div>
 
                 <div class="form-section form-section-half">
                     <label for="status">Status : </label>
-                    <select id="status" name="status" >
-                        <option th:text="${submit.status}">
-                        </option >
-                    </select>
+                    <input  id="status" name="status" readonly  th:field="*{status}">
                 </div>
 
                 <div class="form-section form-section-half">

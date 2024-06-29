@@ -99,46 +99,63 @@
         </div>
 
         <div class="from-container">
+            <a style=" color: inherit;" th:href="@{/interview}" >Interview Schedule List</a>
+            <span> &gt; </span>
+            <a style="text-decoration: none ; color: inherit;" th:href="@{/interview/showCreate}">Interview Schedule Details</a>
 
-            <hr>
             <div class="job-details">
                 <div class="form-group">
-                    <label>Schedule Title: </label> <span th:text="${viewInterviewer.title}"></span>
+                    <label>Schedule Title: </label> <span th:text="${viewInterviewDto.title}"></span>
                 </div>
                 <div class="form-group">
-                    <label>Candidate Name: </label> <span th:text="${viewInterviewer.candidateName}"></span>
+                    <label>Candidate Name: </label> <span th:text="${viewInterviewDto.candidateName}"></span>
                 </div>
                 <div class="form-group">
-                    <label>Schedule Time: </label> <span th:text="${viewInterviewer.schedule}"></span>
+                    <label>Schedule Time: </label> <span th:text="${viewInterviewDto.schedule}"></span>
                 </div>
                 <div class="form-group">
-                    <label>Job: </label> <span th:text="${viewInterviewer.job}"></span>
+                    <label>Job: </label> <span th:text="${viewInterviewDto.job}"></span>
                 </div>
                 <div class="form-group">
-                    <label>Interviewer: </label> <span th:text="${viewInterviewer.interviewer}"></span>
+                    <label>Interviewer: </label> <span th:text="${viewInterviewDto.interviewer}"></span>
                 </div>
                 <div class="form-group">
-                    <label>Location: </label>  <span th:text="${viewInterviewer.location}"></span>
+                    <label>Location: </label>  <span th:text="${viewInterviewDto.location}"></span>
                 </div>
                 <div class="form-group">
-                    <label>Recruiter owner: </label> <span th:text="${viewInterviewer.recruiterOwner}"></span>
+                    <label>Recruiter owner: </label> <span th:text="${viewInterviewDto.recruiterOwner}"></span>
                 </div>
                 <div class="form-group">
-                    <label>Meeting ID: </label> <span th:text="${viewInterviewer.meetingID}"></span>
+                    <label>Meeting ID: </label> <span th:text="${viewInterviewDto.meetingID}"></span>
                 </div>
                 <div class="form-group">
-                    <label>Result: </label> <span th:text="${viewInterviewer.result}"></span>
+                    <label>Result: </label> <span th:text="${viewInterviewDto.result}"></span>
                 </div>
                 <div class="form-group">
-                    <label>Status: </label> <span th:text="${viewInterviewer.status}"></span>
+                    <label>Status: </label> <span th:text="${viewInterviewDto.status}"></span>
                 </div>
                 <div class="form-actions">
-                    <button type="button"> <a th:href="@{/interviewer/showSubmit/{id}(id=${viewInterviewer.id})}">Submit Result</a></button>
-                    <button type="button"><a th:href="@{/interviewer}">Cancel</a></button>
+                    <button type="button"> <a style="text-decoration: none; color: inherit;" th:if="${viewInterviewDto.status != 'Cancelled'}" th:href="@{/interview/showEdit/{id}(id=${viewInterviewDto.interviewId})}">Submit Result</a><span th:if="${viewInterviewDto.status == 'Cancelled'}" style=" cursor: not-allowed;">Submit Result</span></button>
+                    <button type="button"><a th:href="@{/interview}">Cancel</a></button>
                 </div>
             </div>
         </div>
     </main>
+    <div id="cancelModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <p>Are you sure you want to cancel the schedule?</p>
+            <div>
+                <button onclick="confirmCancellation()">Yes</button>
+                <button onclick="closeModal()">No</button>
+            </div>
+        </div>
+    </div>
+    <form id="cancelForm" th:action="@{/interview/cancelSchedule}" method="post" style="display:none;">
+        <input type="hidden" name="id" id="id" th:value="${id}">
+    </form>
 </div>
+
+
 </body>
 </html>

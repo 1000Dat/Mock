@@ -5,6 +5,7 @@ import fa.training.interviewmanagement.entity.Interview;
 import fa.training.interviewmanagement.entity.Job;
 import fa.training.interviewmanagement.entity.UserEntity;
 import fa.training.interviewmanagement.model.interview.InterviewDto;
+import fa.training.interviewmanagement.model.interview.InterviewEditDto;
 import fa.training.interviewmanagement.model.interview.InterviewGetResponse;
 
 import java.util.List;
@@ -20,7 +21,9 @@ public interface InterviewService {
     List<UserEntity> getAllUserInterviewer();
     InterviewGetResponse.InterviewResponse getInterviewById(Integer id);
 
-    void EditInterview(InterviewDto interviewDto, Integer id) throws Exception;
-    InterviewDto findById(Integer id);
+    void EditInterview(InterviewEditDto interviewDto, Integer id) throws Exception;
+    InterviewEditDto findById(Integer id);
     void cancelSchedule(Integer id);
+
+    void Interviewed(InterviewDto request, Integer id) throws Exception ;
 }

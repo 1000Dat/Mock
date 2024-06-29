@@ -58,7 +58,7 @@
             <form class="schedule-form" th:action="@{/interview/edit}" th:object="${edit}" method="post">
 
             <div class="form-section form-section-half">
-                <input type="hidden" th:field="*{interviewId}" />
+                <input type="hidden" th:field="*{id}" />
                 <label for="title">Schedule title <span class="required">*</span></label>
                     <input type="text" id="title" name="title" placeholder="Type a title..."  th:field="*{scheduleTitle}">
                    <div th:if="${#fields.hasErrors('scheduleTitle')}" th:errors="*{scheduleTitle}" class="error"></div>
@@ -66,9 +66,7 @@
                 <div class="form-section form-section-half">
 
                     <label>Candidate name <span class="required"></span></label>
-                    <div th:each="candidate : *{candidates}">
-                        <input type="text" readonly="readonly" th:value="${candidate.candidateName}" class="candidate-field">
-                    </div>
+                    <input  id="candidate" readonly  th:field="*{candidateName}">
                 </div>
                 <div class="form-section form-section-half">
                     <label for="schedule-time">Schedule Time <span class="required">*</span></label>
@@ -103,12 +101,11 @@
                     <label for="interviewer">Interviewer <span class="required">*</span></label>
                     <div class="selected-interviewers" id="selected-interviewers"></div>
                     <div class="select-wrapper">
-                        <select id="interviewer" name="interview" multiple class="select2">
+                        <select id="interviewer" name="interview" multiple  class="select2">
                             <option th:each="interviewer : ${userInterviewerList}"
                                     th:field="*{interview}"
                                     th:value="${interviewer.username}"
                                     th:text="${interviewer.username}">
-
                             </option>
                         </select>
 
@@ -175,6 +172,17 @@
             allowClear: true
         });
     });
+
+    $(document).ready(function() {
+        $('#interviewer').select2({
+            placeholder: "Select options",
+            tags: true,
+            tokenSeparators: [',', ' ']
+        });
+    });
+
+
+
 </script>
 </body>
 </html>

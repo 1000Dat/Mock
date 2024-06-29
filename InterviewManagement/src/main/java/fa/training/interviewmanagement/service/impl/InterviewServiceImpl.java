@@ -7,6 +7,7 @@ import fa.training.interviewmanagement.entity.UserEntity;
 import fa.training.interviewmanagement.model.candidate.CandidateEnum;
 import fa.training.interviewmanagement.model.interview.InterviewCandidate;
 import fa.training.interviewmanagement.model.interview.InterviewDto;
+import fa.training.interviewmanagement.model.interview.InterviewEditDto;
 import fa.training.interviewmanagement.model.interview.InterviewGetResponse;
 import fa.training.interviewmanagement.repository.CandidateRepository;
 import fa.training.interviewmanagement.repository.InterviewRepository;
@@ -205,7 +206,7 @@ public class InterviewServiceImpl implements InterviewService {
 
 
     @Transactional
-    public void EditInterview(InterviewDto request, Integer id) throws Exception {
+    public void EditInterview(InterviewEditDto request, Integer id) throws Exception {
         try {
             Optional<Interview> interviewOptional = interviewRepository.findById(id);
             if (interviewOptional.isEmpty()) {
@@ -215,7 +216,7 @@ public class InterviewServiceImpl implements InterviewService {
             Interview interview = interviewOptional.get();
 
 
-            Optional<Candidate> candidate = candidateRepository.findById(request.getCandidates().get(0).getId());
+
             Job job = jobRepository.findFirstByTitle(request.getJob());
             UserEntity recruiter = userRepository.findByUsername(request.getRecruiterOwner());
 
@@ -232,7 +233,6 @@ public class InterviewServiceImpl implements InterviewService {
             }
             interview.setScheduleTitle(request.getScheduleTitle());
             interview.setScheduleTime(request.getScheduleTime());
-            interview.setCandidate(candidate.get());
             interview.setScheduleFrom(request.getScheduleFrom());
             interview.setScheduleTo(request.getScheduleTo());
             interview.setJob(job);
@@ -240,7 +240,6 @@ public class InterviewServiceImpl implements InterviewService {
             interview.setLocation(request.getLocation());
             interview.setRecruiter(recruiter);
             interview.setMeetingId(request.getMeetingID());
-            interview.setResult(request.getResult());
             interview.setNotes(request.getNotes());
 
             interviewRepository.save(interview);
@@ -254,19 +253,13 @@ public class InterviewServiceImpl implements InterviewService {
 
 
     @Override
-    public InterviewDto findById(Integer id) {
+    public InterviewEditDto findById(Integer id) {
         Interview interview = interviewRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Interview not found"));
 
-        InterviewDto interviewPostDto = new InterviewDto();
-        interviewPostDto.setInterviewId(interview.getInterviewId()); // Set the ID
+        InterviewEditDto interviewPostDto = new InterviewEditDto();
+        interviewPostDto.setId(interview.getInterviewId()); // Set the ID
 
-        InterviewCandidate candidateDto = new InterviewCandidate(
-                interview.getCandidate().getCandId(),
-                interview.getCandidate().getName(),
-                interview.getCandidate().getEmail()
-        );
-        interviewPostDto.setCandidates(Collections.singletonList(candidateDto));
         interviewPostDto.setJob(interview.getJob().getTitle());
 
         List<String> interviewerNames = interview.getInterviewers()
@@ -285,6 +278,7 @@ public class InterviewServiceImpl implements InterviewService {
         interviewPostDto.setResult(interview.getResult());
         interviewPostDto.setStatus(interview.getStatus());
         interviewPostDto.setNotes(interview.getNotes());
+        interviewPostDto.setCandidateName(interview.getCandidate().getName());
         return interviewPostDto;
     }
 
@@ -294,5 +288,40 @@ public class InterviewServiceImpl implements InterviewService {
                 .orElseThrow(() -> new IllegalArgumentException("Interview not found: " + id));
         interview.setStatus("Cancelled");
         interviewRepository.save(interview);
+    }
+
+
+    @Transactional
+    public void Interviewed(InterviewDto request, Integer id) throws Exception {
+        try {
+            Optional<Interview> interviewOptional = interviewRepository.findById(id);
+            if (interviewOptional.isEmpty()) {
+                throw new Exception("Interview not found with id: " + id);
+            }
+
+            Interview interview = interviewOptional.get();
+            interview.setResult(request.getResult());
+            interview.setNotes(request.getNotes());
+            interview.setStatus("Interviewed");
+            interviewRepository.save(interview);
+
+            if ("Failed".equalsIgnoreCase(request.getResult())) {
+                Candidate candidate = interview.getCandidate();
+                candidate.setStatus(CandidateEnum.CandidateStatus.Failed);
+                candidateRepository.save(candidate);
+            }
+            else if ("Passed".equalsIgnoreCase(request.getResult())) {
+                Candidate candidate = interview.getCandidate();
+                candidate.setStatus(CandidateEnum.CandidateStatus.Passed);
+                candidateRepository.save(candidate);
+            }
+
+            interviewRepository.save(interview);
+
+        } catch (DataIntegrityViolationException e) {
+            throw new Exception("Data integrity violation while updating interview with id: " + id, e);
+        } catch (Exception e) {
+            throw new Exception("Error editing interview with id: " + id, e);
+        }
     }
 }

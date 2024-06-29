@@ -5,6 +5,7 @@ import fa.training.interviewmanagement.entity.Job;
 import fa.training.interviewmanagement.entity.UserEntity;
 import fa.training.interviewmanagement.model.interview.InterviewCandidate;
 import fa.training.interviewmanagement.model.interview.InterviewDto;
+import fa.training.interviewmanagement.model.interview.InterviewEditDto;
 import fa.training.interviewmanagement.model.interview.InterviewGetResponse;
 import fa.training.interviewmanagement.service.InterviewService;
 import fa.training.interviewmanagement.service.processor.InterviewValidateProcessor;
@@ -88,6 +89,23 @@ public class InterviewController {
         return "interview";
     }
 
+    @GetMapping("/interviewer")
+    public String getInterviewer(Model model,  InterviewGetResponse interviewPageDto, @RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "10") Integer size , @RequestParam(required = false) String keyword,
+                                @RequestParam(required = false) String status) {
+        if ((keyword != null && !keyword.isEmpty()) || (status != null && !status.isEmpty())) {
+            interviewPageDto = interviewService.searchInterviewer(keyword, status, page, size);
+        } else {
+            interviewPageDto = interviewService.findAll(page, size);
+        }
+        model.addAttribute("interviewLists", interviewPageDto.getInterviewResponseList());
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("status", status);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPage", interviewPageDto.getTotalPage());
+        model.addAttribute("totalElement", interviewPageDto.getTotalElements());
+        return "interviewer";
+    }
+
     @GetMapping("/ViewInterview/{id}")
     public String getInterviewDetail(@PathVariable Integer id, Model model) {
         InterviewGetResponse.InterviewResponse viewInterviewDto = interviewService.getInterviewById(id);
@@ -95,9 +113,16 @@ public class InterviewController {
         return "interviewView";
     }
 
+    @GetMapping("/ViewInterviewer/{id}")
+    public String getInterviewerDetail(@PathVariable Integer id, Model model) {
+        InterviewGetResponse.InterviewResponse viewInterviewDto = interviewService.getInterviewById(id);
+        model.addAttribute("viewInterviewDto", viewInterviewDto);
+        return "interviewerView";
+    }
+
     @GetMapping("/showEdit/{id}")
     public String showEdit(@PathVariable(value = "id")  Integer id, Model model) {
-        InterviewDto edit = interviewService.findById(id);
+        InterviewEditDto edit = interviewService.findById(id);
         model.addAttribute("edit", edit);
         List<Job> jobList = interviewService.getAllJob();
         model.addAttribute("jobsList", jobList);
@@ -110,8 +135,52 @@ public class InterviewController {
         return "interviewEdit";
     }
     @PostMapping("/edit")
-    public String edit(@ModelAttribute("edit") InterviewDto interviewPostDto, BindingResult bindingResult, Model model)  throws Exception {
-        interviewValidator.validate(interviewPostDto, bindingResult);
+    public String edit(@ModelAttribute("edit") InterviewEditDto interviewPostDto, BindingResult bindingResult, Model model)  throws Exception {
+//        interviewValidator.validate(interviewPostDto, bindingResult);
+
+            if (bindingResult.hasErrors()) {
+                List<Job> jobList = interviewService.getAllJob();
+                model.addAttribute("jobsList", jobList);
+                List<Candidate> candidateList = interviewService.getAllCandidate();
+                model.addAttribute("candidateList", candidateList);
+                List<UserEntity> userList = interviewService.getAllUser();
+                model.addAttribute("userList", userList);
+                List<UserEntity> userInterviewerList = interviewService.getAllUserInterviewer();
+                model.addAttribute("userInterviewerList", userInterviewerList);
+                return "interviewEdit";
+            }
+
+            interviewService.EditInterview(interviewPostDto, interviewPostDto.getId());
+
+        return "redirect:/interview";
+
+
+    }
+    @PostMapping("/cancelSchedule")
+    public String cancelSchedule(@RequestParam("id")  Integer id) {
+        interviewService.cancelSchedule(id);
+        return "redirect:/interview"; // Redirect to the interview page or another page after cancelling
+    }
+
+
+
+    @GetMapping("/interviewer/showSubmit/{id}")
+    public String showSubmit(@PathVariable(value = "id")  Integer id, Model model ) {
+        InterviewEditDto submit = interviewService.findById(id);
+        model.addAttribute("submit",submit);
+        List<Job> jobList = interviewService.getAllJob();
+        model.addAttribute("jobsList", jobList);
+        List<Candidate> candidateList = interviewService.getAllCandidate();
+        model.addAttribute("candidateList", candidateList);
+        List<UserEntity> userList = interviewService.getAllUser();
+        model.addAttribute("userList", userList);
+        List<UserEntity> userInterviewerList = interviewService.getAllUserInterviewer();
+        model.addAttribute("userInterviewerList", userInterviewerList);
+        model.addAttribute("username");
+        return "interviewerSubmit";
+    }
+    @PostMapping("/interviewer/submitEdit")
+    public String submit(@ModelAttribute("submit") InterviewEditDto interviewPostDto, BindingResult bindingResult, Model model)  throws Exception {
         if(bindingResult.hasErrors()) {
             List<Job> jobList = interviewService.getAllJob();
             model.addAttribute("jobsList", jobList);
@@ -121,28 +190,15 @@ public class InterviewController {
             model.addAttribute("userList", userList);
             List<UserEntity> userInterviewerList = interviewService.getAllUserInterviewer();
             model.addAttribute("userInterviewerList", userInterviewerList);
-            return "interviewEdit";
+            return "interviewerSubmit";
         }
         InterviewDto interviewPostDto1 = new InterviewDto();
-        interviewPostDto1.setInterviewId(interviewPostDto.getInterviewId());
-        interviewPostDto1.setScheduleTitle(interviewPostDto.getScheduleTitle());
-        interviewPostDto1.setScheduleTime(interviewPostDto.getScheduleTime());
-        interviewPostDto1.setScheduleFrom(interviewPostDto.getScheduleFrom());
-        interviewPostDto1.setScheduleTo(interviewPostDto.getScheduleTo());
-        interviewPostDto1.setLocation(interviewPostDto.getLocation());
-        interviewPostDto1.setJob(interviewPostDto.getJob());
-        interviewPostDto1.setInterview(interviewPostDto.getInterview());
-        interviewPostDto1.setRecruiterOwner(interviewPostDto.getRecruiterOwner());
-        interviewPostDto1.setMeetingID(interviewPostDto.getMeetingID());
+        interviewPostDto1.setInterviewId(interviewPostDto.getId());
         interviewPostDto1.setNotes(interviewPostDto.getNotes());
         interviewPostDto1.setResult(interviewPostDto.getResult());
-        interviewService.EditInterview(interviewPostDto1, interviewPostDto.getInterviewId());
+        interviewPostDto1.setStatus(interviewPostDto.getStatus());
+        interviewService.Interviewed(interviewPostDto1, interviewPostDto.getId());
 
-        return "redirect:/interview";
-    }
-    @PostMapping("/cancelSchedule")
-    public String cancelSchedule(@RequestParam("id")  Integer id) {
-        interviewService.cancelSchedule(id);
-        return "redirect:/interview"; // Redirect to the interview page or another page after cancelling
+        return "redirect:/interview/interviewer" ;
     }
 }
