@@ -153,20 +153,20 @@
                 <div th:if="${totalPages > 1}">
                     <div class="row" style="display: flex; align-items: center;">
                         <div style="margin-right: 20px;">
-                            total Rows: [[${List.size}]]
+                            Total Rows: [[${totalElements}]]
                         </div>
                         <div style="margin-right: 10px;">
-                            <a th:if="${currentPage >= 1}" th:href="@{'/job?page='+${currentPage - 1}}">&lt;</a>
-                            <p th:unless="${currentPage != 0}">&lt;</p>
+                            <a th:if="${currentPage > 0}" th:href="@{'/jobList?page=' + ${currentPage - 1}}">&lt;</a>
+                            <span th:unless="${currentPage > 0}">&lt;</span>
                         </div>
                         <div style="margin-right: 10px;">
-                            <span th:each="i : ${#numbers.sequence(1, totalPages)}">
-                                <a th:if="${currentPage != i - 1}" th:href="@{'/job?page='+${i - 1}}">[[${i}]]</a>
-                                <span th:unless="${currentPage != i - 1}">[[${i}]]  &nbsp; &nbsp;</span>
-                            </span>
+                <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+                    <a th:if="${currentPage != i}" th:href="@{'/jobList?page=' + ${i}}">[[${i + 1}]]</a>
+                    <span th:unless="${currentPage != i}">[[${i + 1}]]  &nbsp; &nbsp;</span>
+                </span>
                         </div>
                         <div style="margin-right: 10px;">
-                            <a th:if="${currentPage < totalPages - 1}" th:href="@{'/job?page=' + ${currentPage + 1}}">></a>
+                            <a th:if="${currentPage < totalPages - 1}" th:href="@{'/jobList?page=' + ${currentPage + 1}}">></a>
                             <span th:unless="${currentPage < totalPages - 1}">></span>
                         </div>
                     </div>

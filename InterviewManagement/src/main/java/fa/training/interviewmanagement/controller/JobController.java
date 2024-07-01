@@ -206,8 +206,14 @@ public class JobController {
     }
 
     @PostMapping("/delete-job/{id}")
-    public String deleteJob(@PathVariable("id") Integer id, Model model) {
+    public String deleteJob(@PathVariable("id") Integer id, Model model, Principal principal) {
+        UserEntity userEntity = checkLogin(principal);
+        Job job = jobService.findById(id);
+        if (!Objects.equals(job.getCreateBy(), userEntity.getUserId())) {
+            throw new RuntimeException("Bạn không có quyền thay đổi");
+        }
         try {
+
             jobService.delete(id);
             model.addAttribute("success", "Job deleted successfully");
         } catch (Exception e) {
