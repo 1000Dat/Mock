@@ -17,6 +17,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -282,15 +284,14 @@ public class JobController {
     }
 
     @PostMapping("/update-job")
-    public String saveJob(@ModelAttribute("jobDto") @Valid JobDto jobDto, BindingResult result, RedirectAttributes redirectAttributes, Model model,Principal principal) {
+    public String saveJob(@ModelAttribute("jobDto") @Valid JobDto jobDto, BindingResult result, RedirectAttributes redirectAttributes, Model model, Principal principal) {
         UserEntity userEntity = checkLogin(principal);
         Job job = jobService.findById(jobDto.getJobId());
         if (!Objects.equals(job.getCreateBy(), userEntity.getUserId())) {
-            throw new RuntimeException("Bạn không có quyền thay đổi");
+            throw new AccessDeniedException("Bạn không có quyền thay đổi");
         }
 
-
-        validateProcessor.validateTitle(jobDto,result);
+        validateProcessor.validateTitle(jobDto, result);
         validateProcessor.validateScheduleTime(jobDto, result);
         if (validateProcessor.isValidate(result, jobDto).hasErrors()) {
             // Đưa jobDto vào model để hiển thị trên view
@@ -307,6 +308,13 @@ public class JobController {
         jobService.updateJob(jobDto.getJobId(), jobDto);
         redirectAttributes.addFlashAttribute("message", "Cập nhật thành công: " + jobDto.getTitle());
         return "redirect:/job";
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public String handleAccessDeniedException(AccessDeniedException ex, Model model) {
+        model.addAttribute("errorMessage", ex.getMessage());
+        return "403"; // Trả về trang lỗi 403
     }
 
 
